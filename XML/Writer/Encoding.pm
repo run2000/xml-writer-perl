@@ -8,12 +8,15 @@
 package XML::Writer::Encoding;
 
 require 5.004;
+require Exporter;
+@ISA = qw(Exporter);
 
 use strict;
-use vars qw($VERSION);
+use vars qw($VERSION @EXPORT_OK);
 use Carp;
 
 $VERSION = "0.699";
+@EXPORT_OK = qw(combine_data combine_xml_entities croak_unless_valid_entity_names);
 
 # Public factory methods
 
