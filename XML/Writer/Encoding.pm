@@ -97,25 +97,50 @@ sub custom_entity_data {
 
 # Constructs from the HTML::Entities set
 sub html_entities {
-	my ($class) = @_;
+	my ($class, $unsafe_chars) = @_;
 	my $self;
 
 	require HTML::Entities;
 
-	my $encode_entities = sub {
-		HTML::Entities::encode_entities($_[0]);
-	};
+	my $encode_entities;
+	my $encode_attributes;
+	my $encoding;
 
-	my $encode_attributes = sub {
-		my $value = HTML::Entities::encode_entities($_[0]);
+	if (defined ($unsafe_chars) && ($unsafe_chars ne '')) {
+		$encode_entities = sub {
+			HTML::Entities::encode_entities($_[0], $unsafe_chars);
+		};
 
-		# Any additional safety for CR, LF, TAB
-		$value =~ s/\x0a/\&#x0A\;/g;
-		$value =~ s/\x0d/\&#x0D\;/g;
-		$value =~ s/\x09/\&#x09\;/g;
+		$encode_attributes = sub {
+			my $value = HTML::Entities::encode_entities($_[0], $unsafe_chars);
 
-		return $value;
-	};
+			# Any additional safety for CR, LF, TAB
+			$value =~ s/\x0a/\&#x0A\;/g;
+			$value =~ s/\x0d/\&#x0D\;/g;
+			$value =~ s/\x09/\&#x09\;/g;
+
+			return $value;
+		};
+
+		# Don't know if we're ASCII-clean, so assume UTF-8
+		$encoding = 'UTF-8';
+	} else {
+		$encode_entities = \&HTML::Entities::encode_entities;
+
+		$encode_attributes = sub {
+			my $value = HTML::Entities::encode_entities($_[0]);
+
+			# Any additional safety for CR, LF, TAB
+			$value =~ s/\x0a/\&#x0A\;/g;
+			$value =~ s/\x0d/\&#x0D\;/g;
+			$value =~ s/\x09/\&#x09\;/g;
+
+			return $value;
+		};
+
+		# Default encoding is 7-bit ASCII clean
+		$encoding = 'US-ASCII';
+	}
 
 	my $make_entity_refs = sub {
 		my $output = $_[0];
@@ -141,7 +166,7 @@ sub html_entities {
 		'ATTRIBUTE' => $encode_attributes,
 		'MAKE_REFS' => $make_entity_refs,
 		'WANTS_REFS' => 1,
-		'DEFAULT_ENCODING' => 'US-ASCII'
+		'DEFAULT_ENCODING' => $encoding
 	};
 
 	bless $self, $class;
