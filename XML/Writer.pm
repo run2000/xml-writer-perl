@@ -76,13 +76,13 @@ sub new {
   if (lc($outputEncoding) eq 'us-ascii') {
     $checkUnencodedRepertoire = \&_croakUnlessASCII;
     unless (defined ($outputEncoder)) {
-      $outputEncoder = XML::Writer::Encoding->NumericEntities();
+      $outputEncoder = XML::Writer::Encoding->numeric_entities();
     }
   } else {
     my $doNothing = sub {};
     $checkUnencodedRepertoire = $doNothing;
     unless (defined ($outputEncoder)) {
-      $outputEncoder = XML::Writer::Encoding->MinimalEntities();
+      $outputEncoder = XML::Writer::Encoding->minimal_entities();
     }
   }
 

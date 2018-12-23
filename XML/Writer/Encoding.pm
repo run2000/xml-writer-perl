@@ -15,17 +15,18 @@ use Carp;
 
 $VERSION = "0.699";
 
-# Factory methods
+# Public factory methods
 
-# Takes a map of an ordinal to an entity name
-sub XMLEntityData {
+# Takes a name of an entity set from XML::Entities::Data
+sub xml_entity_data {
 	my ($class, $entitySet) = @_;
 	require XML::Entities::Data;
 
-	return &CustomEntityData($class, XML::Entities::Data::char2entity($entitySet));
+	return &custom_entity_data($class, XML::Entities::Data::char2entity($entitySet));
 }
 
-sub CustomEntityData {
+# Takes a map of an ordinal to an entity name
+sub custom_entity_data {
 	my ($class) = shift;
 	my %char2entity = %{$_[0]};
 	my $self;
@@ -94,7 +95,8 @@ sub CustomEntityData {
 	return $self;
 }
 
-sub HTMLEntities {
+# Constructs from the HTML::Entities set
+sub html_entities {
 	my ($class) = @_;
 	my $self;
 
@@ -146,7 +148,8 @@ sub HTMLEntities {
 	return $self;
 }
 
-sub NumericEntities {
+# Uses numeric entities for non-ASCII data
+sub numeric_entities {
 	my ($class) = @_;
 	my $self;
 
@@ -197,7 +200,8 @@ sub NumericEntities {
 	return $self;
 }
 
-sub MinimalEntities {
+# Uses the minimal XML entity set. Everything else as-is.
+sub minimal_entities {
 	my ($class) = @_;
 	my $self;
 
@@ -276,7 +280,7 @@ sub default_encoding {
 #
 
 # Combine references of hashes, first character reference wins.
-sub CombineData {
+sub combine_data {
 	my %char2ent = ();
 
 	foreach my $set (@_) {
@@ -289,7 +293,7 @@ sub CombineData {
 }
 
 # Combine character sets by name, first character reference wins.
-sub CombineXMLEntities {
+sub combine_xml_entities {
 	my %char2ent = ();
 
 	require XML::Entities::Data;
@@ -307,7 +311,7 @@ sub CombineXMLEntities {
 
 # For each given hash reference, ensure the hash names conform
 # to the required format.
-sub CroakUnlessValidEntityNames {
+sub croak_unless_valid_entity_names {
 
 	foreach my $set (@_) {
 		foreach my $el (keys (%$set)) {
