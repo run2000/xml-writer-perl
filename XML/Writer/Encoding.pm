@@ -25,7 +25,7 @@ sub xml_entity_data {
 	my ($class, $entitySet) = @_;
 	require XML::Entities::Data;
 
-	return &custom_entity_data($class, XML::Entities::Data::char2entity($entitySet));
+	return custom_entity_data($class, XML::Entities::Data::char2entity($entitySet));
 }
 
 # Takes a map reference of ordinals to entity names
