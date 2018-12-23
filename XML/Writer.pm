@@ -8,9 +8,9 @@
 ########################################################################
 
 package XML::Writer;
-require XML::Writer::Encoding;
 
 require 5.004;
+require XML::Writer::Encoding;
 
 use strict;
 use vars qw($VERSION);
