@@ -8,6 +8,7 @@
 ########################################################################
 
 package XML::Writer;
+require XML::Writer::Encoding;
 
 require 5.004;
 
@@ -15,7 +16,7 @@ use strict;
 use vars qw($VERSION);
 use Carp;
 use IO::Handle;
-$VERSION = "0.625";
+$VERSION = "0.699";
 
 use overload '""' => \&_overload_string;
 
@@ -61,16 +62,34 @@ sub new {
     $nl = "\n";
   }
 
-  my $outputEncoding = $params{ENCODING} || "";
-  my ($checkUnencodedRepertoire, $escapeEncoding);
+  my $outputEncoder = $params{ENCODER};
+  my $outputEncoding;
+
+  my $checkUnencodedRepertoire;
+
+  if (defined ($outputEncoder)) {
+    $outputEncoding = $outputEncoding = $params{ENCODING} || $outputEncoder->default_encoding();
+  } else {
+    $outputEncoding = $params{ENCODING} || "";
+  }
+
   if (lc($outputEncoding) eq 'us-ascii') {
     $checkUnencodedRepertoire = \&_croakUnlessASCII;
-    $escapeEncoding = \&_escapeASCII;
+    unless (defined ($outputEncoder)) {
+      $outputEncoder = XML::Writer::Encoding->NumericEntities();
+    }
   } else {
     my $doNothing = sub {};
     $checkUnencodedRepertoire = $doNothing;
-    $escapeEncoding = $doNothing;
+    unless (defined ($outputEncoder)) {
+      $outputEncoder = XML::Writer::Encoding->MinimalEntities();
+    }
   }
+
+  croak("Not a supported XML encoder")
+    unless (ref ($outputEncoder) eq 'XML::Writer::Encoding');
+
+  my $write_character_entities = $params{WRITE_INTERNAL_ENTITIES} || 1;
 
                                 # Parse variables
   my @elementStack = ();
@@ -91,11 +110,7 @@ sub new {
     my $i = 1;
     while ($atts->[$i]) {
       my $aname = $atts->[$i++];
-      my $value = _escapeLiteral($atts->[$i++]);
-      $value =~ s/\x0a/\&#10\;/g;
-      $value =~ s/\x0d/\&#13\;/g;
-      $value =~ s/\x09/\&#9\;/g;
-      &{$escapeEncoding}($value);
+      my $value = $outputEncoder->attribute($atts->[$i++]);
       $output->print(" $aname=\"$value\"");
     }
   };
@@ -226,6 +241,13 @@ sub new {
     } elsif ( defined $systemId ) {
       $output->print(" SYSTEM \"$systemId\"");
     }
+
+    if ($write_character_entities && $outputEncoder->wants_refs()) {
+      $output->print(" [\n");
+      $outputEncoder->make_refs($output);
+      $output->print(']');
+    }
+
     $output->print(">\n");
     $hasHeading = 1;
   };
@@ -349,13 +371,8 @@ sub new {
 
   my $characters = sub {
     my $data = $_[0];
-    if ($data =~ /[\&\<\>]/) {
-      $data =~ s/\&/\&amp\;/g;
-      $data =~ s/\</\&lt\;/g;
-      $data =~ s/\>/\&gt\;/g;
-    }
-    &{$escapeEncoding}($data);
-    $output->print($data);
+
+    $output->print($outputEncoder->encode($data));
     $hasData = 1;
   };
 
@@ -791,24 +808,6 @@ sub _checkAttributes {
     _croakUnlessDefinedCharacters($_[0]->[$i]);
     $i += 1;
   }
-}
-
-#
-# Private: escape an attribute value literal.
-#
-sub _escapeLiteral {
-  my $data = $_[0];
-  if ($data =~ /[\&\<\>\"]/) {
-    $data =~ s/\&/\&amp\;/g;
-    $data =~ s/\</\&lt\;/g;
-    $data =~ s/\>/\&gt\;/g;
-    $data =~ s/\"/\&quot\;/g;
-  }
-  return $data;
-}
-
-sub _escapeASCII($) {
-  $_[0] =~ s/([^\x00-\x7F])/sprintf('&#x%X;', ord($1))/ge;
 }
 
 sub _croakUnlessASCII($) {
