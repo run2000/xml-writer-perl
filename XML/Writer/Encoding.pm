@@ -25,7 +25,7 @@ sub xml_entity_data {
 	return &custom_entity_data($class, XML::Entities::Data::char2entity($entitySet));
 }
 
-# Takes a map of an ordinal to an entity name
+# Takes a map reference of ordinals to entity names
 sub custom_entity_data {
 	my ($class) = shift;
 	my %char2entity = %{$_[0]};
@@ -75,9 +75,10 @@ sub custom_entity_data {
 			$entityName =~ s/^&//;
 			$entityName =~ s/;$//;
 
-			$output->print (' <!ENTITY ' . sprintf("%-8s", $entityName) . ' "');
+			$output->print (sprintf (' <!ENTITY %-8s "', $entityName));
+
 			for my $c (split //, $charVal) {
-				$output->print (sprintf('&#x%05X;', ord($c)));
+				$output->print (sprintf ('&#x%05X;', ord($c)));
 			}
 			$output->print ("\" >\n");
 		}
@@ -154,9 +155,10 @@ sub html_entities {
 
 			next if ($entityName =~ m/^#/);
 
-			$output->print (' <!ENTITY ' . sprintf("%-8s", $entityName) . '  "');
+			$output->print (sprintf (' <!ENTITY %-8s "', $entityName));
+
 			for my $c (split //, $charVal) {
-				$output->print (sprintf('&#x%04X;', ord($c)));
+				$output->print (sprintf ('&#x%04X;', ord($c)));
 			}
 			$output->print ("\" >\n");
 		}
