@@ -75,7 +75,7 @@ sub custom_entity_data {
 			$entityName =~ s/^&//;
 			$entityName =~ s/;$//;
 
-			$output->print ('  <!ENTITY ' . substr($entityName . (' ' x 10), 0, 10) . ' "');
+			$output->print (' <!ENTITY ' . sprintf("%-8s", $entityName) . ' "');
 			for my $c (split //, $charVal) {
 				$output->print (sprintf('&#x%05X;', ord($c)));
 			}
@@ -124,6 +124,7 @@ sub html_entities {
 
 		# Don't know if we're ASCII-clean, so assume UTF-8
 		$encoding = 'UTF-8';
+
 	} else {
 		$encode_entities = \&HTML::Entities::encode_entities;
 
@@ -151,13 +152,13 @@ sub html_entities {
 			$entityName =~ s/^&//;
 			$entityName =~ s/;$//;
 
-			if ($entityName !~ m/^#/) {
-				$output->print ('  <!ENTITY ' . substr($entityName . (' ' x 10), 0, 10) . ' "');
-				for my $c (split //, $charVal) {
-					$output->print (sprintf('&#x%04X;', ord($c)));
-				}
-				$output->print ("\" >\n");
+			next if ($entityName =~ m/^#/);
+
+			$output->print (' <!ENTITY ' . sprintf("%-8s", $entityName) . '  "');
+			for my $c (split //, $charVal) {
+				$output->print (sprintf('&#x%04X;', ord($c)));
 			}
+			$output->print ("\" >\n");
 		}
 	};
 
