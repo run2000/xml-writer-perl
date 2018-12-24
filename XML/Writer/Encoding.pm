@@ -360,3 +360,62 @@ sub croak_unless_valid_entity_names {
 }
 
 1;
+__END__
+
+########################################################################
+# POD Documentation
+########################################################################
+
+=head1 NAME
+
+XML::Writer::Encoding - Perl extension for encoding XML entities.
+
+=head1 SYNOPSIS
+
+  use XML::Writer;
+  use XML::Writer::Encoding;
+  use IO::File;
+
+  my $output = IO::File->new(">output.xml");
+  my $encoder = XML::Writer::Encoding->html_entities();
+
+  my $writer = XML::Writer->new(OUTPUT => $output,
+                                ENCODER => $encoder);
+  $writer->startTag("greeting",
+                    "class" => "simple");
+  $writer->characters("This program writes \"Hello, world!\"");
+  $writer->endTag("greeting");
+  $writer->end();
+  $output->close();
+
+
+=head1 DESCRIPTION
+
+XML::Writer::Encoding is a helper module for the XML::Writer module.
+The module handles encoding of characters as numeric entities, or
+as defined character entities. The definition of the character
+entities can came from the HTML::Entities module, the
+XML::Entities::Data module, or an arbitrary mapping supplied by a
+hash reference.
+
+
+=head1 AUTHOR
+
+Nicholas Cull E<lt>run2000@the mailers of g.comE<gt>
+
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (c) 2018 Nicholas Cull E<lt>run2000@the mailers of g.comE<gt>
+
+Redistribution and use in source and compiled forms, with or without
+modification, are permitted under any circumstances.  No warranty.
+
+
+=head1 SEE ALSO
+
+XML::Writer
+XML::Entities::Data
+HTML::Entities
+
+=cut
