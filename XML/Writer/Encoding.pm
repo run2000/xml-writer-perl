@@ -1,6 +1,6 @@
 #############################################################################
 # Encoding.pm - write an XML string with parameterised character references.
-# Copyright (c) 2018 Nicholas Cull <run2000@.com>
+# Copyright (c) 2018 Nicholas Cull <run2000@the mailers of g.com>
 # Redistribution and use in source and compiled forms, with or without
 # modification, are permitted under any circumstances.  No warranty.
 #############################################################################
@@ -18,7 +18,9 @@ use Carp;
 $VERSION = "0.699";
 @EXPORT_OK = qw(combine_data combine_xml_entities croak_unless_valid_entity_names);
 
+########################################################################
 # Public factory methods
+########################################################################
 
 # Takes a name of an entity set from XML::Entities::Data
 sub xml_entity_data {
@@ -130,7 +132,9 @@ sub html_entities {
 		$encoding = 'UTF-8';
 
 	} else {
-		$encode_entities = \&HTML::Entities::encode_entities;
+		$encode_entities = sub {
+			HTML::Entities::encode_entities($_[0]);
+		};
 
 		$encode_attributes = sub {
 			my $value = HTML::Entities::encode_entities($_[0]);
@@ -279,8 +283,9 @@ sub minimal_entities {
 	return $self;
 }
 
+########################################################################
 # Public methods.
-#
+########################################################################
 
 sub encode {
 	my $self = shift;
@@ -307,8 +312,9 @@ sub default_encoding {
 	return $self->{DEFAULT_ENCODING};
 }
 
-# Static method for combining sets of entities.
-#
+########################################################################
+# Static methods for combining sets of entities.
+########################################################################
 
 # Combine references of hashes, first character reference wins.
 sub combine_data {
