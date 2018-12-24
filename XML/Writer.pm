@@ -66,6 +66,7 @@ sub new {
   my $outputEncoding;
 
   my $checkUnencodedRepertoire;
+  my $writeCharacterEntities;
 
   if (defined ($outputEncoder)) {
     $outputEncoding = $outputEncoding = $params{ENCODING} || $outputEncoder->default_encoding();
@@ -89,7 +90,11 @@ sub new {
   croak("Not a supported XML encoder")
     unless (ref ($outputEncoder) eq 'XML::Writer::Encoding');
 
-  my $write_character_entities = $params{WRITE_INTERNAL_ENTITIES} || 1;
+  if (defined ($outputEncoder)) {
+    $outputEncoding = $outputEncoding = $params{ENCODING} || $outputEncoder->default_encoding();
+  } else {
+    $outputEncoding = $params{ENCODING} || "";
+  }
 
                                 # Parse variables
   my @elementStack = ();
@@ -242,7 +247,7 @@ sub new {
       $output->print(" SYSTEM \"$systemId\"");
     }
 
-    if ($write_character_entities && $outputEncoder->wants_refs()) {
+    if ($writeCharacterEntities && $outputEncoder->wants_refs()) {
       $output->print(" [\n");
       $outputEncoder->make_refs($output);
       $output->print(']');

@@ -354,7 +354,7 @@ sub croak_unless_valid_entity_names {
 		foreach my $el (keys (%$set)) {
 			my $entName = $set->{$el};
 			Carp::croak ("Entity name \"$entName\" must start with & and end with ;")
-				unless ($entName =~ m/^&.*;$/);
+				unless ($entName =~ m/^&\w[\w\.\-]*;$/);
 		}
 	}
 }
@@ -391,11 +391,11 @@ XML::Writer::Encoding - Perl extension for encoding XML entities.
 
 =head1 DESCRIPTION
 
-XML::Writer::Encoding is a helper module for the XML::Writer module.
+C<XML::Writer::Encoding> is a helper module for the C<XML::Writer> module.
 The module handles encoding of characters as numeric entities, or
 as defined character entities. The definition of the character
-entities can came from the HTML::Entities module, the
-XML::Entities::Data module, or an arbitrary mapping supplied by a
+entities can came from the C<HTML::Entities> module, the
+C<XML::Entities::Data> module, or an arbitrary mapping supplied by a
 hash reference.
 
 
@@ -403,6 +403,207 @@ hash reference.
 
 Nicholas Cull E<lt>run2000@the mailers of g.comE<gt>
 
+
+=head1 METHODS
+
+=head2 Factory Methods
+
+=over 4
+
+=item numeric_entities()
+
+Create an C<XML::Writer::Encoding> object that encodes text as numeric
+entity data:
+
+  my $encoder = XML::Writer::Encoding->numeric_entities();
+  my $writer = XML::Writer->new(ENCODER => $encoder);
+
+There are no arguments for this factory method.
+
+The resulting encoding is equivalent to calling
+C<XML::Writer-E<gt>new(ENCODING =E<gt> 'us-ascii')>.
+
+=item minimal_entities()
+
+Create an C<XML::Writer::Encoding> object that encodes text using only
+the minimum pre-defined XML entity references:
+
+  my $encoder = XML::Writer::Encoding->minimal_entities();
+  my $writer = XML::Writer->new(ENCODER => $encoder);
+
+For text data, the special characters C<E<lt>>, C<E<gt>>, and C<&>
+are encoded with named entities.
+
+For attribute value data, the special characters C<E<lt>>, C<E<gt>>,
+C<&>, and C<"> are encoded as named entities. Additionally, the
+carriage return (\r), linefeed (\n), and tab (\t) characters are
+encoded as numeric entities.
+
+All other text is retained as UTF-8 encoded text.
+
+There are no arguments for this factory method.
+
+The resulting encoding is equivalent to calling
+C<XML::Writer-E<gt>new(ENCODING =E<gt> 'utf-8')>.
+
+=item html_entities([$unsafe_chars])
+
+Create an C<XML::Writer::Encoding> object that encodes text using the
+entity set contained by the C<HTML::Entities> module:
+
+  my $encoder = XML::Writer::Encoding->html_entities();
+  my $writer = XML::Writer->new(ENCODER => $encoder);
+
+The optional C<unsafe_chars> argument can be given to specify which
+characters to consider unsafe.  The unsafe characters is specified
+using the regular expression character class syntax (what you find
+within square brackets in regular expressions).
+
+See the C<HTML::Entities::encode_entities()> method for details.
+
+=item xml_entity_data($entity_set_name)
+
+Create an C<XML::Writer::Encoding> object that encodes text using one
+of the entity sets provided by the XML::Entities::Data module.
+
+  my $encoder = XML::Writer::Encoding->xml_entity_data('isonum');
+  my $writer = XML::Writer->new(ENCODER => $encoder);
+
+The entity_set_name argument specifies which entity set should be
+used.
+
+=over 4
+
+=item Note:
+
+There can be multiple mappings from a code point to an entity name.
+Using the 'all' set can result in an unpredictable mapping. Use the
+C<combine_xml_entities()> method to control how multiple entity sets
+are merged.
+
+=back
+
+=item custom_entity_data(\%entity_set)
+
+Create an C<XML::Writer::Encoding> object that encodes text using the
+supplied character to entity name mapping.
+
+  my %customEntNames = (
+    chr(0x0022) => '&quot;',
+    chr(0x0026) => '&amp;',
+    chr(0x0027) => '&apos;',
+    chr(0x003E) => '&gt;',
+    chr(0x003C) => '&lt;'
+  );
+  my $encoding = XML::Writer::Encoding->custom_entity_data(
+                                                  \%customEntNames);
+  my $writer = XML::Writer->new(ENCODER => $encoder);
+
+The entity_set parameter may be supplied by the C<combine_data()> or
+C<combine_xml_entities()> methods.
+
+=back
+
+=head2 Instance Methods
+
+These are called internally by C<XML::Writer>. The following method
+descriptions are informational.
+
+=over 4
+
+=item encode($text)
+
+Encode the given document text using the XML encoding determined by
+the factory method.
+
+=item attribute($text)
+
+Encode the given attribute value text using the XML encoding determined
+by the factory method.
+
+=item make_refs($writer)
+
+Encode the named entities in an internal DTD section.
+
+=item want_refs()
+
+Determine whether the factory can supply named entity references
+when C<make_refs($writer)> is called.
+
+=back
+
+=head2 Static Methods
+
+=over 4
+
+=item combine_data(\%set1[, \%set2 [, ...]])
+
+Combine multiple sets of character to entity name mappings into
+a new hash reference, in argument order. Where more than one entity
+name maps onto a given character, the first encountered name takes
+precedence.
+
+=item combine_xml_entities($set_name1[, $set_name2[, ...]])
+
+Combine multiple sets of character to entity name mappings from the
+C<XML::Entities::Data> module into a new hash reference, in argument
+order. Where more than one entity name maps onto a given character,
+the first encountered name takes precedence.
+
+=item croak_unless_valid_entity_names(\%entity_set)
+
+Ensure that all given entity names in the given hash reference
+conform to the expected format. Entity names must start with an
+C<&>, end with a C<;>, and contain word characters, hyphens, or
+periods.
+
+=back
+
+=head1 CHARACTER ENCODING
+
+When C<XML::Writer> is constrcted with an C<ENCODER> parameter,
+the encoding supplies a default character set. This can be
+overridden by the C<ENCODING> parameter. The XML declaration
+can always be overridden in the C<XML::Writer::xmlDecl()> method.
+
+The following default encoding rules apply:
+
+=over 4
+
+=item xml_entity_data and custom_entity_data
+
+The default encoding is 'US-ASCII'. All characters outside the
+7-bit ASCII set are encoded, either as named entities or numeric entities.
+
+=item html_entities
+
+When constructed with no parameters, the default encoding is
+'US-ASCII'.  All characters outside the 7-bit ASCII set are encoded,
+either as named entities or numeric entities.
+
+When constructed with an C<unsafe_chars> parameter, the default
+encoding falls back to 'UTF-8'. The parameter is not checked to
+determine whether the unsafe characters fall within the 7-bit ASCII
+range.
+
+=back
+
+=head1 DTD DECLARATION
+
+When C<XML::Writer::doctype()> is called, the encoder can construct
+an internal DTD for the named entity mappings. This is the default
+behaviour for the C<html_entities()>, C<xml_entity_data()>, and 
+C<custom_entity_data()> encoders.
+
+This behaviour can be overridden at construction time by setting the
+C<WRITE_INTERNAL_ENTITIES> to 0, as follows:
+
+  my $xmlEncoding = XML::Writer::Encoding->html_entities();
+  my $writer = new XML::Writer(ENCODER => $xmlEncoding,
+                               WRITE_INTERNAL_ENTITIES => 0);
+
+  $writer->doctype('html', '-//W3C//DTD XHTML 1.0 Strict//EN',
+                   'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd');
 
 =head1 COPYRIGHT AND LICENSE
 
@@ -414,8 +615,14 @@ modification, are permitted under any circumstances.  No warranty.
 
 =head1 SEE ALSO
 
-XML::Writer
-XML::Entities::Data
-HTML::Entities
+=over 4
+
+=item XML::Writer
+
+=item HTML::Entities
+
+=item XML::Entities::Data
+
+=back
 
 =cut
