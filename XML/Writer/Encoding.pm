@@ -421,7 +421,7 @@ entity data:
 There are no arguments for this factory method.
 
 The resulting encoding is equivalent to calling
-C<XML::Writer-E<gt>new(ENCODING =E<gt> 'us-ascii')>.
+C<< XML::Writer->new(ENCODING => 'us-ascii') >>.
 
 =item minimal_entities()
 
@@ -444,7 +444,7 @@ All other text is retained as UTF-8 encoded text.
 There are no arguments for this factory method.
 
 The resulting encoding is equivalent to calling
-C<XML::Writer-E<gt>new(ENCODING =E<gt> 'utf-8')>.
+C<< XML::Writer->new(ENCODING => 'utf-8') >>.
 
 =item html_entities([$unsafe_chars])
 
