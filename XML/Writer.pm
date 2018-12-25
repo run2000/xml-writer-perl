@@ -66,10 +66,12 @@ sub new {
   my $outputEncoding;
 
   my $checkUnencodedRepertoire;
-  my $writeCharacterEntities;
+  my $writeCharacterEntities = defined ($params{WRITE_INTERNAL_ENTITIES}) ?
+                                     $params{WRITE_INTERNAL_ENTITIES} : 1;
 
   if (defined ($outputEncoder)) {
-    $outputEncoding = $params{ENCODING} || $outputEncoder->default_encoding();
+    $outputEncoding = defined($params{ENCODING}) ? $params{ENCODING} :
+                              $outputEncoder->default_encoding();
   } else {
     $outputEncoding = $params{ENCODING} || "";
   }
@@ -89,12 +91,6 @@ sub new {
 
   croak("Not a supported XML encoder")
     unless (ref ($outputEncoder) eq 'XML::Writer::Encoding');
-
-  if (defined ($outputEncoder)) {
-    $outputEncoding = $outputEncoding = $params{ENCODING} || $outputEncoder->default_encoding();
-  } else {
-    $outputEncoding = $params{ENCODING} || "";
-  }
 
                                 # Parse variables
   my @elementStack = ();
@@ -237,6 +233,7 @@ sub new {
 
   my $doctype = sub {
     my ($name, $publicId, $systemId) = (@_);
+
     $output->print("<!DOCTYPE $name");
     if ($publicId) {
       unless ( defined $systemId) {
@@ -249,6 +246,7 @@ sub new {
 
     if ($writeCharacterEntities && $outputEncoder->wants_refs()) {
       $output->print(" [\n");
+
       $outputEncoder->make_refs($output);
       $output->print(']');
     }
