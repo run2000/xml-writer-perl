@@ -15,7 +15,7 @@ use strict;
 
 use Errno;
 
-use Test::More(tests => 95);
+use Test::More(tests => 139);
 
 # Catch warnings
 my $warning;
@@ -1218,7 +1218,7 @@ SKIP: {
 EOR
 };
 
-# Make sure UTF-8 is written properly (HTML encoded)
+# Make sure UTF-8 is written properly (XML encoded)
 SKIP: {
 	skip $unicodeSkipMessage, 2 unless isUnicodeSupported();
 
@@ -1248,7 +1248,7 @@ SKIP: {
 EOR
 };
 
-# Make sure UTF-8 is written properly (HTML encoded)
+# Make sure UTF-8 is written properly (XML encoded)
 SKIP: {
 	skip $unicodeSkipMessage, 2 unless isUnicodeSupported();
 
@@ -1280,7 +1280,7 @@ EOR
 
 # Test characters outside the BMP
 SKIP: {
-	skip $unicodeSkipMessage, 4 unless isUnicodeSupported();
+	skip $unicodeSkipMessage, 6 unless isUnicodeSupported();
 
 	my $s = "\x{10480}"; # U+10480 OSMANYA LETTER ALEF
 
@@ -1310,6 +1310,76 @@ EOR
 
 	checkResult(<<'EOR', 'Characters outside the BMP should be encoded correctly in HTML encoding');
 <x>&#x10480;</x>
+EOR
+}
+
+# Test entity mapping combinations
+SKIP: {
+	skip $unicodeSkipMessage, 8 unless isUnicodeSupported();
+
+	my $ls = "\x{2018}"; # U+02018 lsquo
+	my $rs = "\x{2019}"; # U+02019 rsquo or rsquor
+
+	initEnv(ENCODING => 'utf-8', DATA_MODE => 1);
+
+	$w->startTag('y');
+	$w->dataElement('x', $ls);
+	$w->dataElement('x', $rs);
+	$w->endTag();
+	$w->end();
+
+	checkResult(<<"EOR", 'Characters should be encoded correctly in UTF-8');
+<y>
+<x>\xE2\x80\x98</x>
+<x>\xE2\x80\x99</x>
+</y>
+EOR
+
+	initEnv(ENCODING => 'us-ascii', DATA_MODE => 1);
+
+	$w->startTag('y');
+	$w->dataElement('x', $ls);
+	$w->dataElement('x', $rs);
+	$w->endTag();
+	$w->end();
+
+	checkResult(<<'EOR', 'Characters should be encoded correctly in US-ASCII');
+<y>
+<x>&#x2018;</x>
+<x>&#x2019;</x>
+</y>
+EOR
+
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isonum');
+	initEnv(ENCODER => $encoder, DATA_MODE => 1);
+
+	$w->startTag('y');
+	$w->dataElement('x', $ls);
+	$w->dataElement('x', $rs);
+	$w->endTag();
+	$w->end();
+
+	checkResult(<<'EOR', 'Characters outside the BMP should be encoded correctly in XML encoding (isonum)');
+<y>
+<x>&lsquo;</x>
+<x>&rsquo;</x>
+</y>
+EOR
+
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isopub');
+	initEnv(ENCODER => $encoder, DATA_MODE => 1);
+
+	$w->startTag('y');
+	$w->dataElement('x', $ls);
+	$w->dataElement('x', $rs);
+	$w->endTag();
+	$w->end();
+
+	checkResult(<<'EOR', 'Characters outside the BMP should be encoded correctly in XML encoding (isopub)');
+<y>
+<x>&#x2018;</x>
+<x>&rsquor;</x>
+</y>
 EOR
 }
 
