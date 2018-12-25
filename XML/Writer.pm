@@ -69,7 +69,7 @@ sub new {
   my $writeCharacterEntities;
 
   if (defined ($outputEncoder)) {
-    $outputEncoding = $outputEncoding = $params{ENCODING} || $outputEncoder->default_encoding();
+    $outputEncoding = $params{ENCODING} || $outputEncoder->default_encoding();
   } else {
     $outputEncoding = $params{ENCODING} || "";
   }

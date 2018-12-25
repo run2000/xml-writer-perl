@@ -276,7 +276,7 @@ sub minimal_entities {
 		'ATTRIBUTE' => $encode_attribute,
 		'MAKE_REFS' => $make_entity_refs,
 		'WANTS_REFS' => 0,
-		'DEFAULT_ENCODING' => 'UTF-8'
+		'DEFAULT_ENCODING' => '' # Overridden as required
 	};
 
 	bless $self, $class;
@@ -444,7 +444,7 @@ All other text is retained as UTF-8 encoded text.
 There are no arguments for this factory method.
 
 The resulting encoding is equivalent to calling
-C<< XML::Writer->new(ENCODING => 'utf-8') >>.
+C<< XML::Writer->new() >>.
 
 =item html_entities([$unsafe_chars])
 
