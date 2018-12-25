@@ -315,6 +315,72 @@ my $html_internal_entities = <<EOS
 EOS
 ;
 
+my $isolat1_entities = <<EOS
+ <!ENTITY Agrave   "&#x000C0;" >
+ <!ENTITY Aacute   "&#x000C1;" >
+ <!ENTITY Acirc    "&#x000C2;" >
+ <!ENTITY Atilde   "&#x000C3;" >
+ <!ENTITY Auml     "&#x000C4;" >
+ <!ENTITY Aring    "&#x000C5;" >
+ <!ENTITY AElig    "&#x000C6;" >
+ <!ENTITY Ccedil   "&#x000C7;" >
+ <!ENTITY Egrave   "&#x000C8;" >
+ <!ENTITY Eacute   "&#x000C9;" >
+ <!ENTITY Ecirc    "&#x000CA;" >
+ <!ENTITY Euml     "&#x000CB;" >
+ <!ENTITY Igrave   "&#x000CC;" >
+ <!ENTITY Iacute   "&#x000CD;" >
+ <!ENTITY Icirc    "&#x000CE;" >
+ <!ENTITY Iuml     "&#x000CF;" >
+ <!ENTITY ETH      "&#x000D0;" >
+ <!ENTITY Ntilde   "&#x000D1;" >
+ <!ENTITY Ograve   "&#x000D2;" >
+ <!ENTITY Oacute   "&#x000D3;" >
+ <!ENTITY Ocirc    "&#x000D4;" >
+ <!ENTITY Otilde   "&#x000D5;" >
+ <!ENTITY Ouml     "&#x000D6;" >
+ <!ENTITY Oslash   "&#x000D8;" >
+ <!ENTITY Ugrave   "&#x000D9;" >
+ <!ENTITY Uacute   "&#x000DA;" >
+ <!ENTITY Ucirc    "&#x000DB;" >
+ <!ENTITY Uuml     "&#x000DC;" >
+ <!ENTITY Yacute   "&#x000DD;" >
+ <!ENTITY THORN    "&#x000DE;" >
+ <!ENTITY szlig    "&#x000DF;" >
+ <!ENTITY agrave   "&#x000E0;" >
+ <!ENTITY aacute   "&#x000E1;" >
+ <!ENTITY acirc    "&#x000E2;" >
+ <!ENTITY atilde   "&#x000E3;" >
+ <!ENTITY auml     "&#x000E4;" >
+ <!ENTITY aring    "&#x000E5;" >
+ <!ENTITY aelig    "&#x000E6;" >
+ <!ENTITY ccedil   "&#x000E7;" >
+ <!ENTITY egrave   "&#x000E8;" >
+ <!ENTITY eacute   "&#x000E9;" >
+ <!ENTITY ecirc    "&#x000EA;" >
+ <!ENTITY euml     "&#x000EB;" >
+ <!ENTITY igrave   "&#x000EC;" >
+ <!ENTITY iacute   "&#x000ED;" >
+ <!ENTITY icirc    "&#x000EE;" >
+ <!ENTITY iuml     "&#x000EF;" >
+ <!ENTITY eth      "&#x000F0;" >
+ <!ENTITY ntilde   "&#x000F1;" >
+ <!ENTITY ograve   "&#x000F2;" >
+ <!ENTITY oacute   "&#x000F3;" >
+ <!ENTITY ocirc    "&#x000F4;" >
+ <!ENTITY otilde   "&#x000F5;" >
+ <!ENTITY ouml     "&#x000F6;" >
+ <!ENTITY oslash   "&#x000F8;" >
+ <!ENTITY ugrave   "&#x000F9;" >
+ <!ENTITY uacute   "&#x000FA;" >
+ <!ENTITY ucirc    "&#x000FB;" >
+ <!ENTITY uuml     "&#x000FC;" >
+ <!ENTITY yacute   "&#x000FD;" >
+ <!ENTITY thorn    "&#x000FE;" >
+ <!ENTITY yuml     "&#x000FF;" >
+EOS
+;
+
 # Fetch the current contents of the scratch file as a scalar
 sub getBufStr()
 {
@@ -465,6 +531,19 @@ TEST: {
 EOS
 };
 
+# Empty element tag, XML entity data isolat1.
+TEST: {
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
+	initEnv('ENCODER' => $encoder);
+	$w->xmlDecl();
+	$w->emptyTag("foo");
+	$w->end();
+	checkResult(<<"EOS", 'Empty element tag with XML Entities (US-ASCII)');
+<?xml version="1.0" encoding="US-ASCII"?>
+<foo />
+EOS
+};
+
 # A document with a public and system identifier set, using startTag
 TEST: {
 	my $encoder = XML::Writer::Encoding->html_entities();
@@ -485,6 +564,24 @@ EOS
 
 # A document with a public and system identifier set, using startTag
 TEST: {
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
+	initEnv('ENCODER' => $encoder);
+	$w->xmlDecl();
+	$w->doctype('html', "-//W3C//DTD XHTML 1.1//EN",
+						"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
+	$w->startTag('html');
+	$w->endTag('html');
+	$w->end();
+	checkResult(<<"EOS", 'A document with a public and system identifier (xml entity data, default encoding)');
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" [
+$isolat1_entities]>
+<html></html>
+EOS
+};
+
+# A document with a public and system identifier set, using startTag
+TEST: {
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder,
 			'WRITE_INTERNAL_ENTITIES' => 0);
@@ -495,6 +592,24 @@ TEST: {
 	$w->endTag('html');
 	$w->end();
 	checkResult(<<"EOS", 'A document with a public and system identifier (no html entities, default encoding)');
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html></html>
+EOS
+};
+
+# A document with a public and system identifier set, using startTag
+TEST: {
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
+	initEnv('ENCODER' => $encoder,
+			'WRITE_INTERNAL_ENTITIES' => 0);
+	$w->xmlDecl();
+	$w->doctype('html', "-//W3C//DTD XHTML 1.1//EN",
+						"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
+	$w->startTag('html');
+	$w->endTag('html');
+	$w->end();
+	checkResult(<<"EOS", 'A document with a public and system identifier (no xml entities, default encoding)');
 <?xml version="1.0" encoding="US-ASCII"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html></html>
@@ -659,6 +774,24 @@ TEST: {
 	checkResult("<foo x=\"1&gt;2\" />\n", 'Simple attributes HTML');
 };
 
+# Attributes 2b
+TEST: {
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
+	initEnv('ENCODER' => $encoder);
+	$w->emptyTag("foo", "x" => "1>2");
+	$w->end();
+	checkResult("<foo x=\"1&#x3E;2\" />\n", 'Simple attributes XML isolat1');
+};
+
+# Attributes 2c
+TEST: {
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isonum');
+	initEnv('ENCODER' => $encoder);
+	$w->emptyTag("foo", "x" => "1>2");
+	$w->end();
+	checkResult("<foo x=\"1&gt;2\" />\n", 'Simple attributes XML isonum');
+};
+
 # Attributes 3
 TEST: {
 	initEnv('ENCODING' => 'UTF-8');
@@ -693,6 +826,24 @@ TEST: {
 	checkResult("<foo x=\"didn't\" />\n", 'Attributes with apostrophe HTML custom');
 };
 
+# Attributes 4c
+TEST: {
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
+	initEnv('ENCODER' => $encoder);
+	$w->emptyTag("foo", "x" => "didn't");
+	$w->end();
+	checkResult("<foo x=\"didn&#x27;t\" />\n", 'Attributes with apostrophe XML isolat1');
+};
+
+# Attributes 4d
+TEST: {
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isonum');
+	initEnv('ENCODER' => $encoder);
+	$w->emptyTag("foo", "x" => "didn't");
+	$w->end();
+	checkResult("<foo x=\"didn&apos;t\" />\n", 'Attributes with apostrophe XML isonum');
+};
+
 # Attributes 5
 TEST: {
 	initEnv('ENCODING' => 'UTF-8');
@@ -718,6 +869,15 @@ TEST: {
 	checkResult("<foo x=\"1&#x09;2&#x0D;&#x0A;\" />\n", 'Attributes with control characters HTML');
 };
 
+# Attributes 6b
+TEST: {
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
+	initEnv('ENCODER' => $encoder);
+	$w->emptyTag("foo", "x" => "1\t2\r\n");
+	$w->end();
+	checkResult("<foo x=\"1&#x09;2&#x0D;&#x0A;\" />\n", 'Attributes with control characters XML isolat1');
+};
+
 # Attributes 7
 TEST: {
 	initEnv('ENCODING' => 'UTF-8');
@@ -741,6 +901,24 @@ TEST: {
 	$w->emptyTag("foo", "x" => "attribute \"quoted\" value");
 	$w->end();
 	checkResult("<foo x=\"attribute &quot;quoted&quot; value\" />\n", 'Attributes with double-quote characters HTML');
+};
+
+# Attributes 8b
+TEST: {
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
+	initEnv('ENCODER' => $encoder);
+	$w->emptyTag("foo", "x" => "attribute \"quoted\" value");
+	$w->end();
+	checkResult("<foo x=\"attribute &#x22;quoted&#x22; value\" />\n", 'Attributes with double-quote characters XML isolat1');
+};
+
+# Attributes 8c
+TEST: {
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isonum');
+	initEnv('ENCODER' => $encoder);
+	$w->emptyTag("foo", "x" => "attribute \"quoted\" value");
+	$w->end();
+	checkResult("<foo x=\"attribute &quot;quoted&quot; value\" />\n", 'Attributes with double-quote characters XML isonum');
 };
 
 # Character data 1
@@ -774,6 +952,17 @@ TEST: {
 	checkResult("<foo>Line with tabs\t\tand newlines\r\n</foo>\n", 'Unescaped control characters HTML');
 };
 
+# Character data 2b
+TEST: {
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
+	initEnv('ENCODER' => $encoder);
+	$w->startTag("foo");
+	$w->characters("Line with tabs\t\tand newlines\r\n");
+	$w->endTag("foo");
+	$w->end();
+	checkResult("<foo>Line with tabs\t\tand newlines\r\n</foo>\n", 'Unescaped control characters XML');
+};
+
 # Character data 3
 TEST: {
 	initEnv('ENCODING' => 'UTF-8');
@@ -805,6 +994,28 @@ TEST: {
 	checkResult("<foo>Line with &quot;quotes&quot; outside attribute</foo>\n", 'Unescaped quotes in text HTML');
 };
 
+# Character data 4b
+TEST: {
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
+	initEnv('ENCODER' => $encoder);
+	$w->startTag("foo");
+	$w->characters("Line with \"quotes\" outside attribute");
+	$w->endTag("foo");
+	$w->end();
+	checkResult("<foo>Line with &#x22;quotes&#x22; outside attribute</foo>\n", 'Unescaped quotes in text XML isolat1');
+};
+
+# Character data 4c
+TEST: {
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isonum');
+	initEnv('ENCODER' => $encoder);
+	$w->startTag("foo");
+	$w->characters("Line with \"quotes\" outside attribute");
+	$w->endTag("foo");
+	$w->end();
+	checkResult("<foo>Line with &quot;quotes&quot; outside attribute</foo>\n", 'Unescaped quotes in text XML isonum');
+};
+
 # Character data 5
 TEST: {
 	initEnv('ENCODING' => 'UTF-8');
@@ -834,6 +1045,17 @@ TEST: {
 	$w->endTag("foo");
 	$w->end();
 	checkResult("<foo></foo>\n", 'empty text HTML');
+};
+
+# Character data 6b
+TEST: {
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
+	initEnv('ENCODER' => $encoder);
+	$w->startTag("foo");
+	$w->characters("");
+	$w->endTag("foo");
+	$w->end();
+	checkResult("<foo></foo>\n", 'empty text XML');
 };
 
 # Character data 7
@@ -876,6 +1098,28 @@ TEST: {
 	$w->endTag("foo");
 	$w->end();
 	checkResult("<foo>didn't</foo>\n", 'Apostrophe text HTML custom');
+};
+
+# Character data 8c
+TEST: {
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
+	initEnv('ENCODER' => $encoder);
+	$w->startTag("foo");
+	$w->characters("didn't");
+	$w->endTag("foo");
+	$w->end();
+	checkResult("<foo>didn&#x27;t</foo>\n", 'Apostrophe text XML isolat1');
+};
+
+# Character data 8d
+TEST: {
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isonum');
+	initEnv('ENCODER' => $encoder);
+	$w->startTag("foo");
+	$w->characters("didn't");
+	$w->endTag("foo");
+	$w->end();
+	checkResult("<foo>didn&apos;t</foo>\n", 'Apostrophe text XML isonum');
 };
 
 # Make sure UTF-8 is written properly
@@ -964,12 +1208,72 @@ SKIP: {
 	$w->endTag('a');
 	$w->end();
 
-	checkResult(<<EOR, 'When requested, output should be US-ASCII encoded');
+	checkResult(<<EOR, 'When requested, output should be HTML (ASCII) encoded');
 <?xml version="1.0" encoding="US-ASCII"?>
 
 <a>
 <b>&pound;</b>
 <b>&euro;</b>
+</a>
+EOR
+};
+
+# Make sure UTF-8 is written properly (HTML encoded)
+SKIP: {
+	skip $unicodeSkipMessage, 2 unless isUnicodeSupported();
+
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
+	initEnv('ENCODER' => $encoder, DATA_MODE => 1);
+
+	$w->xmlDecl();
+	$w->startTag('a');
+
+	# I need U+00A3 as an is_utf8 string; I want to keep the source ASCII.
+	# There must be a better way to do this.
+	require Encode;
+	my $text = Encode::decode('iso-8859-1', "\x{A3}");
+	$w->dataElement('b', $text);
+
+	$w->dataElement('b', "\x{20AC}");
+	$w->endTag('a');
+	$w->end();
+
+	checkResult(<<EOR, 'When requested, output should be XML (isolat1) ASCII encoded');
+<?xml version="1.0" encoding="US-ASCII"?>
+
+<a>
+<b>&#xA3;</b>
+<b>&#x20AC;</b>
+</a>
+EOR
+};
+
+# Make sure UTF-8 is written properly (HTML encoded)
+SKIP: {
+	skip $unicodeSkipMessage, 2 unless isUnicodeSupported();
+
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isonum');
+	initEnv('ENCODER' => $encoder, DATA_MODE => 1);
+
+	$w->xmlDecl();
+	$w->startTag('a');
+
+	# I need U+00A3 as an is_utf8 string; I want to keep the source ASCII.
+	# There must be a better way to do this.
+	require Encode;
+	my $text = Encode::decode('iso-8859-1', "\x{A3}");
+	$w->dataElement('b', $text);
+
+	$w->dataElement('b', "\x{20AC}");
+	$w->endTag('a');
+	$w->end();
+
+	checkResult(<<EOR, 'When requested, output should be XML (isonum) ASCII encoded');
+<?xml version="1.0" encoding="US-ASCII"?>
+
+<a>
+<b>&pound;</b>
+<b>&#x20AC;</b>
 </a>
 EOR
 };
