@@ -15,7 +15,7 @@ use strict;
 
 use Errno;
 
-use Test::More(tests => 139);
+use Test::More(tests => 150);
 
 # Catch warnings
 my $warning;
@@ -1359,14 +1359,14 @@ EOR
 	$w->endTag();
 	$w->end();
 
-	checkResult(<<'EOR', 'Characters outside the BMP should be encoded correctly in XML encoding (isonum)');
+	checkResult(<<'EOR', 'Characters should be encoded correctly in XML encoding (isonum)');
 <y>
 <x>&lsquo;</x>
 <x>&rsquo;</x>
 </y>
 EOR
 
-	my $encoder = XML::Writer::Encoding->xml_entity_data('isopub');
+	$encoder = XML::Writer::Encoding->xml_entity_data('isopub');
 	initEnv(ENCODER => $encoder, DATA_MODE => 1);
 
 	$w->startTag('y');
@@ -1375,12 +1375,170 @@ EOR
 	$w->endTag();
 	$w->end();
 
-	checkResult(<<'EOR', 'Characters outside the BMP should be encoded correctly in XML encoding (isopub)');
+	checkResult(<<'EOR', 'Characters should be encoded correctly in XML encoding (isopub)');
 <y>
 <x>&#x2018;</x>
 <x>&rsquor;</x>
 </y>
 EOR
+}
+
+# Test entity mapping combinations
+SKIP: {
+	skip $unicodeSkipMessage, 4 unless isUnicodeSupported();
+
+	my $ls = "\x{2018}"; # U+02018 lsquo
+	my $rs = "\x{2019}"; # U+02019 rsquo or rsquor
+
+	require XML::Entities::Data;
+
+	my $isonum = XML::Entities::Data::char2entity('isonum');
+	my $isopub = XML::Entities::Data::char2entity('isopub');
+	my $combined = XML::Writer::Encoding::combine_data($isonum, $isopub);
+
+	XML::Writer::Encoding::croak_unless_valid_entity_names($combined);
+
+	my $encoder = XML::Writer::Encoding->custom_entity_data($combined);
+	initEnv(ENCODER => $encoder, DATA_MODE => 1);
+
+	$w->startTag('y');
+	$w->dataElement('x', $ls);
+	$w->dataElement('x', $rs);
+	$w->endTag();
+	$w->end();
+
+	checkResult(<<'EOR', 'Combined characters should be encoded correctly in XML encoding (isonum first)');
+<y>
+<x>&lsquo;</x>
+<x>&rsquo;</x>
+</y>
+EOR
+
+	$combined = XML::Writer::Encoding::combine_data($isopub, $isonum);
+
+	XML::Writer::Encoding::croak_unless_valid_entity_names($combined);
+
+	$encoder = XML::Writer::Encoding->custom_entity_data($combined);
+	initEnv(ENCODER => $encoder, DATA_MODE => 1);
+
+	$w->startTag('y');
+	$w->dataElement('x', $ls);
+	$w->dataElement('x', $rs);
+	$w->endTag();
+	$w->end();
+
+	checkResult(<<'EOR', 'Combined characters should be encoded correctly in XML encoding (isopub first)');
+<y>
+<x>&lsquo;</x>
+<x>&rsquor;</x>
+</y>
+EOR
+}
+
+# Test entity mapping combinations 2
+SKIP: {
+	skip $unicodeSkipMessage, 4 unless isUnicodeSupported();
+
+	my $ls = "\x{2018}"; # U+02018 lsquo
+	my $rs = "\x{2019}"; # U+02019 rsquo or rsquor
+
+	my $combined = XML::Writer::Encoding::combine_xml_entities('isonum', 'isopub');
+
+	XML::Writer::Encoding::croak_unless_valid_entity_names($combined);
+
+	my $encoder = XML::Writer::Encoding->custom_entity_data($combined);
+	initEnv(ENCODER => $encoder, DATA_MODE => 1);
+
+	$w->startTag('y');
+	$w->dataElement('x', $ls);
+	$w->dataElement('x', $rs);
+	$w->endTag();
+	$w->end();
+
+	checkResult(<<'EOR', 'Combined XML characters should be encoded correctly in XML encoding (isonum first)');
+<y>
+<x>&lsquo;</x>
+<x>&rsquo;</x>
+</y>
+EOR
+
+	$combined = XML::Writer::Encoding::combine_xml_entities('isopub', 'isonum');
+
+	XML::Writer::Encoding::croak_unless_valid_entity_names($combined);
+
+	$encoder = XML::Writer::Encoding->custom_entity_data($combined);
+	initEnv(ENCODER => $encoder, DATA_MODE => 1);
+
+	$w->startTag('y');
+	$w->dataElement('x', $ls);
+	$w->dataElement('x', $rs);
+	$w->endTag();
+	$w->end();
+
+	checkResult(<<'EOR', 'Combined XML characters should be encoded correctly in XML encoding (isopub first)');
+<y>
+<x>&lsquo;</x>
+<x>&rsquor;</x>
+</y>
+EOR
+}
+
+# Test entity mapping combinations 2
+SKIP: {
+	skip $unicodeSkipMessage, 4 unless isUnicodeSupported();
+
+	my $ls = "\x{2018}"; # U+02018 lsquo
+	my $rs = "\x{2019}"; # U+02019 rsquo or rsquor
+
+	my %entities = (
+		chr(38) => '&amp;',
+		chr(0x00027) => '&apos;',
+		chr(0x0003E) => '&gt;',
+		chr(60) => '&lt;',
+		chr(0x02018) => '&lsquo;',
+		chr(0x02019) => '&rsquo;'
+	);
+
+	XML::Writer::Encoding::croak_unless_valid_entity_names(\%entities);
+
+	my $encoder = XML::Writer::Encoding->custom_entity_data(\%entities);
+	initEnv(ENCODER => $encoder, DATA_MODE => 1);
+
+	$w->startTag('y');
+	$w->dataElement('x', $ls);
+	$w->dataElement('x', $rs);
+	$w->endTag();
+	$w->end();
+
+	checkResult(<<'EOR', 'Combined XML characters should be encoded correctly in XML encoding (isonum first)');
+<y>
+<x>&lsquo;</x>
+<x>&rsquo;</x>
+</y>
+EOR
+
+}
+
+# Test entity mapping combinations 3
+SKIP: {
+	skip $unicodeSkipMessage, 1 unless isUnicodeSupported();
+
+	my $ls = "\x{2018}"; # U+02018 lsquo
+	my $rs = "\x{2019}"; # U+02019 rsquo or rsquor
+
+	my %entities = (
+		chr(38) => '&amp;',
+		chr(0x00027) => '&apos;',
+		chr(0x0003E) => '&gt;',
+		chr(60) => '&lt;',
+		chr(0x02018) => '&lsquo;',
+		chr(0x02019) => '&rsquo'
+	);
+
+	expectError("Entity name \".*\" must start with & and end with ;", eval {
+		XML::Writer::Encoding::croak_unless_valid_entity_names(\%entities);
+	});
+
 }
 
 # Free test resources
