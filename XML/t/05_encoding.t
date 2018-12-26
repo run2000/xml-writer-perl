@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 ########################################################################
-# test.pl - test script for XML::Writer module.
+# test.pl - test script for XML::Writer::Encoding module.
 # Copyright (c) 1999 by Megginson Technologies.
 # Copyright (c) 2003 Ed Avis <ed@membled.com>
 # Copyright (c) 2004-2010 Joseph Walton <joe@kafsemo.org>
@@ -9,7 +9,7 @@
 ########################################################################
 
 # Before 'make install' is performed this script should be runnable with
-# 'make test'. After 'make install' it should work as 'perl 01_main.t'
+# 'make test'. After 'make install' it should work as 'perl 05_encoding.t'
 
 use strict;
 
