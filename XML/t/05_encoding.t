@@ -15,7 +15,7 @@ use strict;
 
 use Errno;
 
-use Test::More(tests => 170);
+use Test::More(tests => 172);
 
 # Catch warnings
 my $warning;
@@ -1787,6 +1787,7 @@ EOR
 }
 
 # Test custom entity mapping, hand-generated
+# Entity indent defaults to 1
 SKIP: {
 	skip $unicodeSkipMessage, 2 unless isUnicodeSupported();
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
@@ -1808,6 +1809,7 @@ SKIP: {
 	my $encoder = XML::Writer::Encoding->custom_entity_data(\%entities);
 	initEnv(ENCODER => $encoder, DATA_MODE => 1);
 
+	$w->doctype('y');
 	$w->startTag('y');
 	$w->dataElement('x', $ls);
 	$w->dataElement('x', $rs);
@@ -1815,9 +1817,66 @@ SKIP: {
 	$w->end();
 
 	checkResult(<<'EOR', 'Custom XML characters should be encoded correctly in XML encoding');
+<!DOCTYPE y [
+ <!ENTITY amp      "&#x00026;" >
+ <!ENTITY apos     "&#x00027;" >
+ <!ENTITY lt       "&#x0003C;" >
+ <!ENTITY gt       "&#x0003E;" >
+ <!ENTITY lsquo    "&#x02018;" >
+ <!ENTITY rsquo    "&#x02019;" >
+]>
+
 <y>
 <x>&lsquo;</x>
 <x>&rsquo;</x>
+</y>
+EOR
+
+}
+
+# Test custom entity mapping, hand-generated
+# Entity indent follows DATA_INDENT level (2)
+SKIP: {
+	skip $unicodeSkipMessage, 2 unless isUnicodeSupported();
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
+	my $ls = "\x{2018}"; # U+02018 lsquo
+	my $rs = "\x{2019}"; # U+02019 rsquo or rsquor
+
+	my %entities = (
+		chr(38) => '&amp;',
+		chr(0x00027) => '&apos;',
+		chr(0x0003E) => '&gt;',
+		chr(60) => '&lt;',
+		chr(0x02018) => '&lsquo;',
+		chr(0x02019) => '&rsquo;'
+	);
+
+	XML::Writer::Encoding::croak_unless_valid_entity_names(\%entities);
+
+	my $encoder = XML::Writer::Encoding->custom_entity_data(\%entities);
+	initEnv(ENCODER => $encoder, DATA_MODE => 1, DATA_INDENT => 2);
+
+	$w->doctype('y');
+	$w->startTag('y');
+	$w->dataElement('x', $ls);
+	$w->dataElement('x', $rs);
+	$w->endTag();
+	$w->end();
+
+	checkResult(<<'EOR', 'Custom XML characters should be indented 2 levels in XML encoding');
+<!DOCTYPE y [
+  <!ENTITY amp      "&#x00026;" >
+  <!ENTITY apos     "&#x00027;" >
+  <!ENTITY lt       "&#x0003C;" >
+  <!ENTITY gt       "&#x0003E;" >
+  <!ENTITY lsquo    "&#x02018;" >
+  <!ENTITY rsquo    "&#x02019;" >
+]>
+
+<y>
+  <x>&lsquo;</x>
+  <x>&rsquo;</x>
 </y>
 EOR
 

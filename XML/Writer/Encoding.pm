@@ -73,6 +73,7 @@ sub custom_entity_data {
 
 	my $make_entity_refs = sub {
 		my $output = $_[0];
+		my $indent = $_[1] || ' ';
 
 		foreach my $charVal (sort (keys (%char2entity))) {
 			my $entityName = $char2entity{$charVal};
@@ -80,7 +81,7 @@ sub custom_entity_data {
 			$entityName =~ s/^&//;
 			$entityName =~ s/;$//;
 
-			$output->print (sprintf (' <!ENTITY %-8s "', $entityName));
+			$output->print (sprintf ('%s<!ENTITY %-8s "', $indent, $entityName));
 
 			for my $c (split //, $charVal) {
 				$output->print (sprintf ('&#x%05X;', ord($c)));
@@ -145,6 +146,7 @@ sub html_entities {
 
 	my $make_entity_refs = sub {
 		my $output = $_[0];
+		my $indent = $_[1] || ' ';
 
 		foreach my $charVal (sort (keys (%HTML::Entities::char2entity))) {
 			my $entityName = $HTML::Entities::char2entity{$charVal};
@@ -154,7 +156,7 @@ sub html_entities {
 
 			next if ($entityName =~ m/^#/);
 
-			$output->print (sprintf (' <!ENTITY %-8s "', $entityName));
+			$output->print (sprintf ('%s<!ENTITY %-8s "', $indent, $entityName));
 
 			for my $c (split //, $charVal) {
 				$output->print (sprintf ('&#x%04X;', ord($c)));
@@ -513,7 +515,7 @@ the factory method.
 Encode the given attribute value text using the XML encoding determined
 by the factory method.
 
-=item make_refs($writer)
+=item make_refs($writer[, $indent])
 
 Encode the named entities in an internal DTD section.
 

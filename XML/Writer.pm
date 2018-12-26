@@ -242,7 +242,7 @@ sub new {
     if ($writeCharacterEntities && $outputEncoder->wants_refs()) {
       $output->print(" [\n");
 
-      $outputEncoder->make_refs($output);
+      $outputEncoder->make_refs($output, $dataIndent);
       $output->print(']');
     }
 
