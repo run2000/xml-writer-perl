@@ -94,7 +94,7 @@ sub custom_entity_data {
 		'ATTRIBUTE' => $encode_attributes,
 		'MAKE_REFS' => $make_entity_refs,
 		'WANTS_REFS' => 1,
-		'DEFAULT_ENCODING' => 'US-ASCII'
+		'DEFAULT_ENCODING' => '' # Overridden as required
 	};
 
 	bless $self, $class;
@@ -110,7 +110,6 @@ sub html_entities {
 
 	my $encode_entities;
 	my $encode_attributes;
-	my $encoding;
 
 	if (defined ($unsafe_chars) && ($unsafe_chars ne '')) {
 		$encode_entities = sub {
@@ -128,9 +127,6 @@ sub html_entities {
 			return $value;
 		};
 
-		# Don't know if we're ASCII-clean, so assume UTF-8
-		$encoding = 'UTF-8';
-
 	} else {
 		$encode_entities = sub {
 			HTML::Entities::encode_entities($_[0]);
@@ -146,9 +142,6 @@ sub html_entities {
 
 			return $value;
 		};
-
-		# Default encoding is 7-bit ASCII clean
-		$encoding = 'US-ASCII';
 	}
 
 	my $make_entity_refs = sub {
@@ -176,7 +169,7 @@ sub html_entities {
 		'ATTRIBUTE' => $encode_attributes,
 		'MAKE_REFS' => $make_entity_refs,
 		'WANTS_REFS' => 1,
-		'DEFAULT_ENCODING' => $encoding
+		'DEFAULT_ENCODING' => '' # Overridden as required
 	};
 
 	bless $self, $class;
@@ -495,7 +488,7 @@ supplied character to entity name mapping.
     chr(0x003E) => '&gt;',
     chr(0x003C) => '&lt;'
   );
-  my $encoding = XML::Writer::Encoding->custom_entity_data(
+  my $encoder = XML::Writer::Encoding->custom_entity_data(
                                                   \%customEntNames);
   my $writer = XML::Writer->new(ENCODER => $encoder);
 

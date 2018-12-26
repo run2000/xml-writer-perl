@@ -15,7 +15,7 @@ use strict;
 
 use Errno;
 
-use Test::More(tests => 150);
+use Test::More(tests => 170);
 
 # Catch warnings
 my $warning;
@@ -517,6 +517,7 @@ EOS
 };
 
 # Empty element tag, HTML entities.
+# default encoding
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
@@ -525,13 +526,14 @@ SKIP: {
 	$w->xmlDecl();
 	$w->emptyTag("foo");
 	$w->end();
-	checkResult(<<"EOS", 'Empty element tag with HTML Entities (US-ASCII)');
-<?xml version="1.0" encoding="US-ASCII"?>
+	checkResult(<<"EOS", 'Empty element tag with HTML Entities');
+<?xml version="1.0"?>
 <foo />
 EOS
 };
 
 # Empty element tag, HTML entities 2.
+# default encoding
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
@@ -540,18 +542,33 @@ SKIP: {
 	$w->xmlDecl();
 	$w->emptyTag("foo");
 	$w->end();
-	checkResult(<<"EOS", 'Empty element tag with HTML Entities (UTF-8)');
-<?xml version="1.0" encoding="UTF-8"?>
+	checkResult(<<"EOS", 'Empty element tag with HTML Entities, custom unsafe list');
+<?xml version="1.0"?>
 <foo />
 EOS
 };
 
-# Empty element tag, XML entity data isolat1.
+# Empty element tag, XML entity data isolat1, encoding = default
 SKIP: {
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
 
 	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
 	initEnv('ENCODER' => $encoder);
+	$w->xmlDecl();
+	$w->emptyTag("foo");
+	$w->end();
+	checkResult(<<"EOS", 'Empty element tag with XML Entities');
+<?xml version="1.0"?>
+<foo />
+EOS
+};
+
+# Empty element tag, XML entity data isolat1, encoding = US-ASCII
+SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
+	initEnv('ENCODER' => $encoder, 'ENCODING' => 'US-ASCII');
 	$w->xmlDecl();
 	$w->emptyTag("foo");
 	$w->end();
@@ -561,7 +578,38 @@ SKIP: {
 EOS
 };
 
-# A document with a public and system identifier set, using startTag
+# Empty element tag, XML entity data isolat1, encoding = US-ASCII
+SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
+	initEnv('ENCODER' => $encoder, 'ENCODING' => 'UTF-8');
+	$w->xmlDecl();
+	$w->emptyTag("foo");
+	$w->end();
+	checkResult(<<"EOS", 'Empty element tag with XML Entities (UTF-8)');
+<?xml version="1.0" encoding="UTF-8"?>
+<foo />
+EOS
+};
+
+# Empty element tag, XML entity data isolat1, encoding = UTF-8
+SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
+	initEnv('ENCODER' => $encoder, 'ENCODING' => 'UTF-8');
+	$w->xmlDecl();
+	$w->emptyTag("foo");
+	$w->end();
+	checkResult(<<"EOS", 'Empty element tag with XML Entities (UTF-8)');
+<?xml version="1.0" encoding="UTF-8"?>
+<foo />
+EOS
+};
+
+# A document with a public and system identifier set, using startTag, HTML
+# internal entities = default, encoding = default
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
@@ -574,34 +622,15 @@ SKIP: {
 	$w->endTag('html');
 	$w->end();
 	checkResult(<<"EOS", 'A document with a public and system identifier (html entities, default encoding)');
-<?xml version="1.0" encoding="US-ASCII"?>
+<?xml version="1.0"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" [
 $html_internal_entities]>
 <html></html>
 EOS
 };
 
-# A document with a public and system identifier set, using startTag
-SKIP: {
-	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
-
-	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
-	initEnv('ENCODER' => $encoder);
-	$w->xmlDecl();
-	$w->doctype('html', "-//W3C//DTD XHTML 1.1//EN",
-						"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
-	$w->startTag('html');
-	$w->endTag('html');
-	$w->end();
-	checkResult(<<"EOS", 'A document with a public and system identifier (xml entity data, default encoding)');
-<?xml version="1.0" encoding="US-ASCII"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" [
-$isolat1_entities]>
-<html></html>
-EOS
-};
-
-# A document with a public and system identifier set, using startTag
+# A document with a public and system identifier set, using startTag, HTML
+# internal entities = no, encoding = default
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
@@ -614,14 +643,58 @@ SKIP: {
 	$w->startTag('html');
 	$w->endTag('html');
 	$w->end();
-	checkResult(<<"EOS", 'A document with a public and system identifier (no html entities, default encoding)');
-<?xml version="1.0" encoding="US-ASCII"?>
+	checkResult(<<"EOS", 'A document with a public and system identifier (html entities, default encoding)');
+<?xml version="1.0"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html></html>
 EOS
 };
 
-# A document with a public and system identifier set, using startTag
+# A document with a public and system identifier set, using startTag, HTML
+# internal entities = yes, encoding = default
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
+	my $encoder = XML::Writer::Encoding->html_entities();
+	initEnv('ENCODER' => $encoder,
+			'WRITE_INTERNAL_ENTITIES' => 1);
+	$w->xmlDecl();
+	$w->doctype('html', "-//W3C//DTD XHTML 1.1//EN",
+						"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
+	$w->startTag('html');
+	$w->endTag('html');
+	$w->end();
+	checkResult(<<"EOS", 'A document with a public and system identifier (no html entities, default encoding)');
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" [
+$html_internal_entities]>
+<html></html>
+EOS
+};
+
+# A document with a public and system identifier set, using startTag, XML
+# internal entities = default, encoding = default
+SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
+	initEnv('ENCODER' => $encoder);
+	$w->xmlDecl();
+	$w->doctype('html', "-//W3C//DTD XHTML 1.1//EN",
+						"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
+	$w->startTag('html');
+	$w->endTag('html');
+	$w->end();
+	checkResult(<<"EOS", 'A document with a public and system identifier (xml entity data, default encoding)');
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" [
+$isolat1_entities]>
+<html></html>
+EOS
+};
+
+# A document with a public and system identifier set, using startTag, XML
+# internal entities = no, encoding = default
 SKIP: {
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
 
@@ -634,14 +707,37 @@ SKIP: {
 	$w->startTag('html');
 	$w->endTag('html');
 	$w->end();
-	checkResult(<<"EOS", 'A document with a public and system identifier (no xml entities, default encoding)');
-<?xml version="1.0" encoding="US-ASCII"?>
+	checkResult(<<"EOS", 'A document with a public and system identifier (xml entity data, default encoding)');
+<?xml version="1.0"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html></html>
 EOS
 };
 
+# A document with a public and system identifier set, using startTag, XML
+# internal entities = yes
+SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
+	initEnv('ENCODER' => $encoder,
+			'WRITE_INTERNAL_ENTITIES' => 1);
+	$w->xmlDecl();
+	$w->doctype('html', "-//W3C//DTD XHTML 1.1//EN",
+						"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
+	$w->startTag('html');
+	$w->endTag('html');
+	$w->end();
+	checkResult(<<"EOS", 'A document with a public and system identifier (xml entity data, default encoding)');
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" [
+$isolat1_entities]>
+<html></html>
+EOS
+};
+
 # A document with a public and system identifier set, using startTag
+# internal entities = default, encoding = ''
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
@@ -663,6 +759,52 @@ EOS
 };
 
 # A document with a public and system identifier set, using startTag
+# internal entities = no, encoding = ''
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
+	my $encoder = XML::Writer::Encoding->html_entities();
+	initEnv('ENCODER' => $encoder,
+			'ENCODING' => '',
+			'WRITE_INTERNAL_ENTITIES' => 0);
+	$w->xmlDecl();
+	$w->doctype('html', "-//W3C//DTD XHTML 1.1//EN",
+						"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
+	$w->startTag('html');
+	$w->endTag('html');
+	$w->end();
+	checkResult(<<"EOS", 'A document with a public and system identifier (html entities, empty encoding)');
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html></html>
+EOS
+};
+
+# A document with a public and system identifier set, using startTag
+# internal entities = yes, encoding = ''
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
+	my $encoder = XML::Writer::Encoding->html_entities();
+	initEnv('ENCODER' => $encoder,
+			'ENCODING' => '',
+			'WRITE_INTERNAL_ENTITIES' => 1);
+	$w->xmlDecl();
+	$w->doctype('html', "-//W3C//DTD XHTML 1.1//EN",
+						"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
+	$w->startTag('html');
+	$w->endTag('html');
+	$w->end();
+	checkResult(<<"EOS", 'A document with a public and system identifier (html entities, empty encoding)');
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" [
+$html_internal_entities]>
+<html></html>
+EOS
+};
+
+# A document with a public and system identifier set, using startTag, HTML
+# internal entities = default, encoding = UTF-8
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
@@ -677,6 +819,28 @@ SKIP: {
 	$w->end();
 	checkResult(<<"EOS", 'A document with a public and system identifier (html entities, utf-8 encoding)');
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" [
+$html_internal_entities]>
+<html></html>
+EOS
+};
+
+# A document with a public and system identifier set, using startTag, HTML
+# internal entities = default, encoding = US-ASCII
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
+	my $encoder = XML::Writer::Encoding->html_entities();
+	initEnv('ENCODER' => $encoder,
+			'ENCODING' => 'US-ASCII');
+	$w->xmlDecl();
+	$w->doctype('html', "-//W3C//DTD XHTML 1.1//EN",
+						"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
+	$w->startTag('html');
+	$w->endTag('html');
+	$w->end();
+	checkResult(<<"EOS", 'A document with a public and system identifier (html entities, utf-8 encoding)');
+<?xml version="1.0" encoding="US-ASCII"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" [
 $html_internal_entities]>
 <html></html>
@@ -699,6 +863,7 @@ EOS
 };
 
 # A document with a public identifier and an empty system identifier (html encoder)
+# internal entities = default, encoding = default
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
@@ -710,7 +875,7 @@ SKIP: {
 	$w->emptyTag('html');
 	$w->end();
 	checkResult(<<"EOS", 'A document with a public and an empty system identifier (internal DTD)');
-<?xml version="1.0" encoding="US-ASCII"?>
+<?xml version="1.0"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "" [
 $html_internal_entities]>
 <html />
@@ -718,6 +883,7 @@ EOS
 };
 
 # A document with a public identifier and an empty system identifier (html encoder)
+# internal entities = no, encoding = default
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
@@ -730,8 +896,29 @@ SKIP: {
 	$w->emptyTag('html');
 	$w->end();
 	checkResult(<<"EOS", 'A document with a public and an empty system identifier (no internal DTD)');
-<?xml version="1.0" encoding="US-ASCII"?>
+<?xml version="1.0"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "">
+<html />
+EOS
+};
+
+# A document with a public identifier and an empty system identifier (html encoder)
+# internal entities = yes, encoding = default
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
+	my $encoder = XML::Writer::Encoding->html_entities();
+	initEnv('ENCODER' => $encoder,
+			'WRITE_INTERNAL_ENTITIES' => 1);
+	$w->xmlDecl();
+	$w->doctype('html', "-//W3C//DTD XHTML 1.1//EN",
+						"");
+	$w->emptyTag('html');
+	$w->end();
+	checkResult(<<"EOS", 'A document with a public and an empty system identifier (no internal DTD)');
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "" [
+$html_internal_entities]>
 <html />
 EOS
 };
@@ -751,6 +938,7 @@ EOS
 };
 
 # A document with only a system identifier set (html entities)
+# internal entities = default, encoding = default
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
@@ -761,7 +949,7 @@ SKIP: {
 	$w->emptyTag('html');
 	$w->end();
 	checkResult(<<"EOS", 'A document with just a system identifier (html entities, internal DTD)');
-<?xml version="1.0" encoding="US-ASCII"?>
+<?xml version="1.0"?>
 <!DOCTYPE html SYSTEM "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" [
 $html_internal_entities]>
 <html />
@@ -769,6 +957,7 @@ EOS
 };
 
 # A document with only a system identifier set (html entities)
+# internal entities = no, default encoding
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
@@ -780,8 +969,28 @@ SKIP: {
 	$w->emptyTag('html');
 	$w->end();
 	checkResult(<<"EOS", 'A document with just a system identifier (html entities, no internal DTD)');
-<?xml version="1.0" encoding="US-ASCII"?>
+<?xml version="1.0"?>
 <!DOCTYPE html SYSTEM "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html />
+EOS
+};
+
+# A document with only a system identifier set (html entities)
+# internal entities = yes, default encoding
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
+	my $encoder = XML::Writer::Encoding->html_entities();
+	initEnv('ENCODER' => $encoder,
+			'WRITE_INTERNAL_ENTITIES' => 1);
+	$w->xmlDecl();
+	$w->doctype('html', undef, "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
+	$w->emptyTag('html');
+	$w->end();
+	checkResult(<<"EOS", 'A document with just a system identifier (html entities, no internal DTD)');
+<?xml version="1.0"?>
+<!DOCTYPE html SYSTEM "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" [
+$html_internal_entities]>
 <html />
 EOS
 };
@@ -1271,7 +1480,7 @@ SKIP: {
 EOR
 };
 
-# Make sure UTF-8 is written properly (HTML encoded)
+# Make sure UTF-8 is written properly (HTML encoded, default encoding)
 SKIP: {
 	skip $unicodeSkipMessage, 2 unless isUnicodeSupported();
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
@@ -1292,8 +1501,8 @@ SKIP: {
 	$w->endTag('a');
 	$w->end();
 
-	checkResult(<<EOR, 'When requested, output should be HTML (ASCII) encoded');
-<?xml version="1.0" encoding="US-ASCII"?>
+	checkResult(<<EOR, 'When requested, output should be HTML encoded');
+<?xml version="1.0"?>
 
 <a>
 <b>&pound;</b>
@@ -1302,7 +1511,7 @@ SKIP: {
 EOR
 };
 
-# Make sure UTF-8 is written properly (XML encoded isolat1)
+# Make sure UTF-8 is written properly (XML encoded isolat1), default encoding
 SKIP: {
 	skip $unicodeSkipMessage, 2 unless isUnicodeSupported();
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
@@ -1323,8 +1532,8 @@ SKIP: {
 	$w->endTag('a');
 	$w->end();
 
-	checkResult(<<EOR, 'When requested, output should be XML (isolat1) ASCII encoded');
-<?xml version="1.0" encoding="US-ASCII"?>
+	checkResult(<<EOR, 'When requested, output should be XML (isolat1) encoded');
+<?xml version="1.0"?>
 
 <a>
 <b>&#xA3;</b>
@@ -1333,7 +1542,7 @@ SKIP: {
 EOR
 };
 
-# Make sure UTF-8 is written properly (XML encoded isonum)
+# Make sure UTF-8 is written properly (XML encoded isonum), default encoding
 SKIP: {
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
 	skip $unicodeSkipMessage, 2 unless isUnicodeSupported();
@@ -1354,8 +1563,8 @@ SKIP: {
 	$w->endTag('a');
 	$w->end();
 
-	checkResult(<<EOR, 'When requested, output should be XML (isonum) ASCII encoded');
-<?xml version="1.0" encoding="US-ASCII"?>
+	checkResult(<<EOR, 'When requested, output should be XML (isonum) encoded');
+<?xml version="1.0"?>
 
 <a>
 <b>&pound;</b>
