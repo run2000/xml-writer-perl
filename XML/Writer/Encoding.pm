@@ -454,7 +454,7 @@ See the C<HTML::Entities::encode_entities()> method for details.
 =item xml_entity_data($entity_set_name)
 
 Create an C<XML::Writer::Encoding> object that encodes text using one
-of the entity sets provided by the XML::Entities::Data module.
+of the entity sets provided by the C<XML::Entities::Data> module.
 
   my $encoder = XML::Writer::Encoding->xml_entity_data('isonum');
   my $writer = XML::Writer->new(ENCODER => $encoder);
