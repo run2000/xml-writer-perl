@@ -72,7 +72,7 @@ my $w;
 my $outputFile = IO::File->new_tmpfile or die "Unable to create temporary file: $!";
 
 # Output from HTML::Entities mapping, interpolated in results as needed
-my $html_internal_entities = <<EOS
+my $html_internal_entities = <<'EOS';
  <!ENTITY quot     "&#x0022;" >
  <!ENTITY amp      "&#x0026;" >
  <!ENTITY lt       "&#x003C;" >
@@ -326,9 +326,8 @@ my $html_internal_entities = <<EOS
  <!ENTITY hearts   "&#x2665;" >
  <!ENTITY diams    "&#x2666;" >
 EOS
-;
 
-my $isolat1_entities = <<EOS
+my $isolat1_entities = <<'EOS';
  <!ENTITY Agrave   "&#x000C0;" >
  <!ENTITY Aacute   "&#x000C1;" >
  <!ENTITY Acirc    "&#x000C2;" >
@@ -392,7 +391,6 @@ my $isolat1_entities = <<EOS
  <!ENTITY thorn    "&#x000FE;" >
  <!ENTITY yuml     "&#x000FF;" >
 EOS
-;
 
 # Fetch the current contents of the scratch file as a scalar
 sub getBufStr()
