@@ -15,7 +15,7 @@ use strict;
 
 use Errno;
 
-use Test::More(tests => 172);
+use Test::More(tests => 174);
 
 # Catch warnings
 my $warning;
@@ -987,10 +987,36 @@ SKIP: {
 	$w->doctype('html', undef, "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
 	$w->emptyTag('html');
 	$w->end();
-	checkResult(<<"EOS", 'A document with just a system identifier (html entities, no internal DTD)');
+	checkResult(<<"EOS", 'A document with just a system identifier (html entities, internal DTD)');
 <?xml version="1.0"?>
 <!DOCTYPE html SYSTEM "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" [
 $html_internal_entities]>
+<html />
+EOS
+};
+
+# A document with only a system identifier set (html entities)
+# internal entities = yes, default encoding
+# indent = tabs
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
+	my $encoder = XML::Writer::Encoding->html_entities();
+	initEnv('ENCODER' => $encoder,
+			'WRITE_INTERNAL_ENTITIES' => 1,
+			'DATA_INDENT' => "\t");
+	$w->xmlDecl();
+	$w->doctype('html', undef, "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
+	$w->emptyTag('html');
+	$w->end();
+
+	my $internal_entities = $html_internal_entities;
+	$internal_entities =~ s/^\s+/\t/gm; # All leading spaces => single tab
+
+	checkResult(<<"EOS", 'A document with just a system identifier (html entities, internal DTD tabs)');
+<?xml version="1.0"?>
+<!DOCTYPE html SYSTEM "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" [
+$internal_entities]>
 <html />
 EOS
 };
