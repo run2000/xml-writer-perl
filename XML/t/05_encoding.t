@@ -802,7 +802,7 @@ TEST: {
 	checkResult("<foo x=\"1&gt;2\" />\n", 'Simple attributes ASCII');
 };
 
-# Attributes 2a
+# Attributes 2 - HTML entities
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
@@ -813,7 +813,7 @@ SKIP: {
 	checkResult("<foo x=\"1&gt;2\" />\n", 'Simple attributes HTML');
 };
 
-# Attributes 2b
+# Attributes 2 - XML entities isolat1
 SKIP: {
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
 
@@ -824,7 +824,7 @@ SKIP: {
 	checkResult("<foo x=\"1&#x3E;2\" />\n", 'Simple attributes XML isolat1');
 };
 
-# Attributes 2c
+# Attributes 2 - XML entities isonum
 SKIP: {
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
 
@@ -851,7 +851,7 @@ TEST: {
 	checkResult("<foo x=\"didn't\" />\n", 'Attributes with apostrophe ASCII');
 };
 
-# Attributes 4a
+# Attributes 4 - HTML entities
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
@@ -862,7 +862,7 @@ SKIP: {
 	checkResult("<foo x=\"didn&#39;t\" />\n", 'Attributes with apostrophe HTML default');
 };
 
-# Attributes 4b
+# Attributes 4 - HTML entities, custom unsafe set
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
@@ -911,7 +911,7 @@ TEST: {
 	checkResult("<foo x=\"1&#9;2&#13;&#10;\" />\n", 'Attributes with control characters ASCII');
 };
 
-# Attributes 6a
+# Attributes 6 - HTML entities
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
@@ -922,7 +922,7 @@ SKIP: {
 	checkResult("<foo x=\"1&#x09;2&#x0D;&#x0A;\" />\n", 'Attributes with control characters HTML');
 };
 
-# Attributes 6b
+# Attributes 6 - XML entities isolat1
 SKIP: {
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
 
@@ -949,7 +949,7 @@ TEST: {
 	checkResult("<foo x=\"attribute &quot;quoted&quot; value\" />\n", 'Attributes with double-quote characters ASCII');
 };
 
-# Attributes 8a
+# Attributes 8 - HTML entities
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
@@ -960,7 +960,7 @@ SKIP: {
 	checkResult("<foo x=\"attribute &quot;quoted&quot; value\" />\n", 'Attributes with double-quote characters HTML');
 };
 
-# Attributes 8b
+# Attributes 8 - XML entities isolat1
 SKIP: {
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
 
@@ -971,7 +971,7 @@ SKIP: {
 	checkResult("<foo x=\"attribute &#x22;quoted&#x22; value\" />\n", 'Attributes with double-quote characters XML isolat1');
 };
 
-# Attributes 8c
+# Attributes 8 - XML entities isonum
 SKIP: {
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
 
@@ -1002,7 +1002,7 @@ TEST: {
 	checkResult("<foo>Line with tabs\t\tand newlines\r\n</foo>\n", 'Unescaped control characters US-ASCII');
 };
 
-# Character data 2a
+# Character data 2 - HTML entities
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
@@ -1015,7 +1015,7 @@ SKIP: {
 	checkResult("<foo>Line with tabs\t\tand newlines\r\n</foo>\n", 'Unescaped control characters HTML');
 };
 
-# Character data 2b
+# Character data 2 - XML entities isolat1
 SKIP: {
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
 
@@ -1048,7 +1048,7 @@ TEST: {
 	checkResult("<foo>Line with \"quotes\" outside attribute</foo>\n", 'Unescaped quotes in text ASCII');
 };
 
-# Character data 4a
+# Character data 4 - HTML entities
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
@@ -1061,7 +1061,7 @@ SKIP: {
 	checkResult("<foo>Line with &quot;quotes&quot; outside attribute</foo>\n", 'Unescaped quotes in text HTML');
 };
 
-# Character data 4b
+# Character data 4 - XML entities isolat1
 SKIP: {
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
 
@@ -1074,7 +1074,7 @@ SKIP: {
 	checkResult("<foo>Line with &#x22;quotes&#x22; outside attribute</foo>\n", 'Unescaped quotes in text XML isolat1');
 };
 
-# Character data 4c
+# Character data 4 - XML entities isonum
 SKIP: {
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
 
@@ -1107,7 +1107,7 @@ TEST: {
 	checkResult("<foo></foo>\n", 'empty text ASCII');
 };
 
-# Character data 6a
+# Character data 6 - HTML entities
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
@@ -1120,7 +1120,7 @@ SKIP: {
 	checkResult("<foo></foo>\n", 'empty text HTML');
 };
 
-# Character data 6b
+# Character data 6 - XML entities isolat1
 SKIP: {
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
 
@@ -1153,7 +1153,7 @@ TEST: {
 	checkResult("<foo>didn't</foo>\n", 'Apostrophe text ASCII');
 };
 
-# Character data 8a
+# Character data 8 - HTML entities
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
@@ -1166,7 +1166,7 @@ SKIP: {
 	checkResult("<foo>didn&#39;t</foo>\n", 'Apostrophe text HTML');
 };
 
-# Character data 8b
+# Character data 8 - HTML entities, custom unsafe set
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
@@ -1179,7 +1179,7 @@ SKIP: {
 	checkResult("<foo>didn't</foo>\n", 'Apostrophe text HTML custom');
 };
 
-# Character data 8c
+# Character data 8 - XML entities isolat1
 SKIP: {
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
 
@@ -1192,7 +1192,7 @@ SKIP: {
 	checkResult("<foo>didn&#x27;t</foo>\n", 'Apostrophe text XML isolat1');
 };
 
-# Character data 8d
+# Character data 8 - XML entities isonum
 SKIP: {
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
 
@@ -1302,7 +1302,7 @@ SKIP: {
 EOR
 };
 
-# Make sure UTF-8 is written properly (XML encoded)
+# Make sure UTF-8 is written properly (XML encoded isolat1)
 SKIP: {
 	skip $unicodeSkipMessage, 2 unless isUnicodeSupported();
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
@@ -1333,7 +1333,7 @@ SKIP: {
 EOR
 };
 
-# Make sure UTF-8 is written properly (XML encoded)
+# Make sure UTF-8 is written properly (XML encoded isonum)
 SKIP: {
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
 	skip $unicodeSkipMessage, 2 unless isUnicodeSupported();
@@ -1483,6 +1483,9 @@ SKIP: {
 
 	my $isonum = XML::Entities::Data::char2entity('isonum');
 	my $isopub = XML::Entities::Data::char2entity('isopub');
+
+	# Initial test with isonum taking precendence over isopub.
+
 	my $combined = XML::Writer::Encoding::combine_data($isonum, $isopub);
 
 	XML::Writer::Encoding::croak_unless_valid_entity_names($combined);
@@ -1502,6 +1505,7 @@ SKIP: {
 <x>&rsquo;</x>
 </y>
 EOR
+	# Re-run test with isopub taking precendence over isonum.
 
 	$combined = XML::Writer::Encoding::combine_data($isopub, $isonum);
 
@@ -1573,7 +1577,7 @@ EOR
 EOR
 }
 
-# Test entity mapping combinations 2
+# Test custom entity mapping, hand-generated
 SKIP: {
 	skip $unicodeSkipMessage, 2 unless isUnicodeSupported();
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
@@ -1610,7 +1614,7 @@ EOR
 
 }
 
-# Test entity mapping combinations 3
+# Test custom invalid entity mappings, hand generated
 SKIP: {
 	skip $unicodeSkipMessage, 1 unless isUnicodeSupported();
 
