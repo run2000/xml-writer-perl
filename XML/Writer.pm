@@ -69,12 +69,7 @@ sub new {
   my $writeCharacterEntities = defined ($params{WRITE_INTERNAL_ENTITIES}) ?
                                      $params{WRITE_INTERNAL_ENTITIES} : 1;
 
-  if (defined ($outputEncoder)) {
-    $outputEncoding = defined($params{ENCODING}) ? $params{ENCODING} :
-                              $outputEncoder->default_encoding();
-  } else {
-    $outputEncoding = $params{ENCODING} || "";
-  }
+  $outputEncoding = $params{ENCODING} || "";
 
   if (lc($outputEncoding) eq 'us-ascii') {
     $checkUnencodedRepertoire = \&_croakUnlessASCII;

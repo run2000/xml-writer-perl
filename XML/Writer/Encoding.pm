@@ -93,8 +93,7 @@ sub custom_entity_data {
 		'ENCODE' => $encode_entities,
 		'ATTRIBUTE' => $encode_attributes,
 		'MAKE_REFS' => $make_entity_refs,
-		'WANTS_REFS' => 1,
-		'DEFAULT_ENCODING' => '' # Overridden as required
+		'WANTS_REFS' => 1
 	};
 
 	bless $self, $class;
@@ -168,8 +167,7 @@ sub html_entities {
 		'ENCODE' => $encode_entities,
 		'ATTRIBUTE' => $encode_attributes,
 		'MAKE_REFS' => $make_entity_refs,
-		'WANTS_REFS' => 1,
-		'DEFAULT_ENCODING' => '' # Overridden as required
+		'WANTS_REFS' => 1
 	};
 
 	bless $self, $class;
@@ -220,8 +218,7 @@ sub numeric_entities {
 		'ENCODE' => $encode_entities,
 		'ATTRIBUTE' => $encode_attribute,
 		'MAKE_REFS' => $make_entity_refs,
-		'WANTS_REFS' => 0,
-		'DEFAULT_ENCODING' => 'US-ASCII'
+		'WANTS_REFS' => 0
 	};
 
 	bless $self, $class;
@@ -268,8 +265,7 @@ sub minimal_entities {
 		'ENCODE' => $encode_entities,
 		'ATTRIBUTE' => $encode_attribute,
 		'MAKE_REFS' => $make_entity_refs,
-		'WANTS_REFS' => 0,
-		'DEFAULT_ENCODING' => '' # Overridden as required
+		'WANTS_REFS' => 0
 	};
 
 	bless $self, $class;
@@ -298,11 +294,6 @@ sub make_refs {
 sub wants_refs {
 	my $self = shift;
 	return $self->{WANTS_REFS};
-}
-
-sub default_encoding {
-	my $self = shift;
-	return $self->{DEFAULT_ENCODING};
 }
 
 ########################################################################
@@ -452,6 +443,10 @@ characters to consider unsafe.  The unsafe characters is specified
 using the regular expression character class syntax (what you find
 within square brackets in regular expressions).
 
+When C<unsafe_chars> is not provided, the resulting encoding is
+7-bit ASCII safe. Otherwise, 7-bit ASCII safety depends on the set of
+unsafe characters specified.
+
 See the C<HTML::Entities::encode_entities()> method for details.
 
 =item xml_entity_data($entity_set_name)
@@ -464,6 +459,8 @@ of the entity sets provided by the XML::Entities::Data module.
 
 The entity_set_name argument specifies which entity set should be
 used.
+
+The resulting encoding is 7-bit ASCII safe.
 
 =over 4
 
@@ -494,6 +491,8 @@ supplied character to entity name mapping.
 
 The entity_set parameter may be supplied by the C<combine_data()> or
 C<combine_xml_entities()> methods.
+
+The resulting encoding is 7-bit ASCII safe.
 
 =back
 
