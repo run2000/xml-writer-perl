@@ -552,35 +552,6 @@ periods.
 
 =back
 
-=head1 CHARACTER ENCODING
-
-When C<XML::Writer> is constrcted with an C<ENCODER> parameter,
-the encoding supplies a default character set. This can be
-overridden by the C<ENCODING> parameter. The XML declaration
-can always be overridden in the C<XML::Writer::xmlDecl()> method.
-
-The following default encoding rules apply:
-
-=over 4
-
-=item xml_entity_data and custom_entity_data
-
-The default encoding is 'US-ASCII'. All characters outside the
-7-bit ASCII set are encoded, either as named entities or numeric entities.
-
-=item html_entities
-
-When constructed with no parameters, the default encoding is
-'US-ASCII'.  All characters outside the 7-bit ASCII set are encoded,
-either as named entities or numeric entities.
-
-When constructed with an C<unsafe_chars> parameter, the default
-encoding falls back to 'UTF-8'. The parameter is not checked to
-determine whether the unsafe characters fall within the 7-bit ASCII
-range.
-
-=back
-
 =head1 DTD DECLARATION
 
 When C<XML::Writer::doctype()> is called, the encoder can construct
