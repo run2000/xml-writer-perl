@@ -35,6 +35,8 @@ sub wasNoWarning($)
 
 # Constants for Unicode support
 my $unicodeSkipMessage = 'Unicode only supported with Perl >= 5.8.1';
+my $htmlSkipMessage = 'HTML::Entities not available';
+my $xmlSkipMessage = 'XML::Entities::Data not available';
 
 sub isUnicodeSupported()
 {
@@ -43,6 +45,17 @@ sub isUnicodeSupported()
 
 require XML::Writer;
 require XML::Writer::Encoding;
+
+sub isHTMLEntitiesAvailable()
+{
+#	eval {require HTML::Entity;}; # Deliberate typo
+	eval {require HTML::Entities;};
+}
+
+sub isXMLEntitiesDataAvailable() {
+#	eval {require XML::Entity::Data;}; # Deliberate typo
+	eval {require XML::Entities::Data;};
+}
 
 SKIP: {
 	skip "Perls before 5.6 always warn when loading XML::Writer", 1 if $] <=
@@ -506,7 +519,9 @@ EOS
 };
 
 # Empty element tag, HTML entities.
-TEST: {
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder);
 	$w->xmlDecl();
@@ -519,7 +534,9 @@ EOS
 };
 
 # Empty element tag, HTML entities 2.
-TEST: {
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
 	my $encoder = XML::Writer::Encoding->html_entities('^\t\r\n\x20-\x25\x27-\x3b\x3d\x3f-\x7e');
 	initEnv('ENCODER' => $encoder);
 	$w->xmlDecl();
@@ -532,7 +549,9 @@ EOS
 };
 
 # Empty element tag, XML entity data isolat1.
-TEST: {
+SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
 	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
 	initEnv('ENCODER' => $encoder);
 	$w->xmlDecl();
@@ -545,7 +564,9 @@ EOS
 };
 
 # A document with a public and system identifier set, using startTag
-TEST: {
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder);
 	$w->xmlDecl();
@@ -563,7 +584,9 @@ EOS
 };
 
 # A document with a public and system identifier set, using startTag
-TEST: {
+SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
 	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
 	initEnv('ENCODER' => $encoder);
 	$w->xmlDecl();
@@ -581,7 +604,9 @@ EOS
 };
 
 # A document with a public and system identifier set, using startTag
-TEST: {
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder,
 			'WRITE_INTERNAL_ENTITIES' => 0);
@@ -599,7 +624,9 @@ EOS
 };
 
 # A document with a public and system identifier set, using startTag
-TEST: {
+SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
 	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
 	initEnv('ENCODER' => $encoder,
 			'WRITE_INTERNAL_ENTITIES' => 0);
@@ -617,7 +644,9 @@ EOS
 };
 
 # A document with a public and system identifier set, using startTag
-TEST: {
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder,
 			'ENCODING' => '');
@@ -636,7 +665,9 @@ EOS
 };
 
 # A document with a public and system identifier set, using startTag
-TEST: {
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder,
 			'ENCODING' => 'UTF-8');
@@ -670,7 +701,9 @@ EOS
 };
 
 # A document with a public identifier and an empty system identifier (html encoder)
-TEST: {
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder);
 	$w->xmlDecl();
@@ -687,7 +720,9 @@ EOS
 };
 
 # A document with a public identifier and an empty system identifier (html encoder)
-TEST: {
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder,
 			'WRITE_INTERNAL_ENTITIES' => 0);
@@ -718,7 +753,9 @@ EOS
 };
 
 # A document with only a system identifier set (html entities)
-TEST: {
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder);
 	$w->xmlDecl();
@@ -734,7 +771,9 @@ EOS
 };
 
 # A document with only a system identifier set (html entities)
-TEST: {
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder,
 			'WRITE_INTERNAL_ENTITIES' => 0);
@@ -766,7 +805,9 @@ TEST: {
 };
 
 # Attributes 2a
-TEST: {
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder);
 	$w->emptyTag("foo", "x" => "1>2");
@@ -775,7 +816,9 @@ TEST: {
 };
 
 # Attributes 2b
-TEST: {
+SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
 	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
 	initEnv('ENCODER' => $encoder);
 	$w->emptyTag("foo", "x" => "1>2");
@@ -784,7 +827,9 @@ TEST: {
 };
 
 # Attributes 2c
-TEST: {
+SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
 	my $encoder = XML::Writer::Encoding->xml_entity_data('isonum');
 	initEnv('ENCODER' => $encoder);
 	$w->emptyTag("foo", "x" => "1>2");
@@ -809,7 +854,9 @@ TEST: {
 };
 
 # Attributes 4a
-TEST: {
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder);
 	$w->emptyTag("foo", "x" => "didn't");
@@ -818,7 +865,9 @@ TEST: {
 };
 
 # Attributes 4b
-TEST: {
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
 	my $encoder = XML::Writer::Encoding->html_entities('^\t\r\n\x20-\x25\x27-\x3b\x3d\x3f-\x7e');
 	initEnv('ENCODER' => $encoder);
 	$w->emptyTag("foo", "x" => "didn't");
@@ -827,7 +876,9 @@ TEST: {
 };
 
 # Attributes 4c
-TEST: {
+SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
 	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
 	initEnv('ENCODER' => $encoder);
 	$w->emptyTag("foo", "x" => "didn't");
@@ -836,7 +887,9 @@ TEST: {
 };
 
 # Attributes 4d
-TEST: {
+SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
 	my $encoder = XML::Writer::Encoding->xml_entity_data('isonum');
 	initEnv('ENCODER' => $encoder);
 	$w->emptyTag("foo", "x" => "didn't");
@@ -861,7 +914,9 @@ TEST: {
 };
 
 # Attributes 6a
-TEST: {
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder);
 	$w->emptyTag("foo", "x" => "1\t2\r\n");
@@ -870,7 +925,9 @@ TEST: {
 };
 
 # Attributes 6b
-TEST: {
+SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
 	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
 	initEnv('ENCODER' => $encoder);
 	$w->emptyTag("foo", "x" => "1\t2\r\n");
@@ -895,7 +952,9 @@ TEST: {
 };
 
 # Attributes 8a
-TEST: {
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder);
 	$w->emptyTag("foo", "x" => "attribute \"quoted\" value");
@@ -904,7 +963,9 @@ TEST: {
 };
 
 # Attributes 8b
-TEST: {
+SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
 	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
 	initEnv('ENCODER' => $encoder);
 	$w->emptyTag("foo", "x" => "attribute \"quoted\" value");
@@ -913,7 +974,9 @@ TEST: {
 };
 
 # Attributes 8c
-TEST: {
+SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
 	my $encoder = XML::Writer::Encoding->xml_entity_data('isonum');
 	initEnv('ENCODER' => $encoder);
 	$w->emptyTag("foo", "x" => "attribute \"quoted\" value");
@@ -942,7 +1005,9 @@ TEST: {
 };
 
 # Character data 2a
-TEST: {
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder);
 	$w->startTag("foo");
@@ -953,7 +1018,9 @@ TEST: {
 };
 
 # Character data 2b
-TEST: {
+SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
 	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
 	initEnv('ENCODER' => $encoder);
 	$w->startTag("foo");
@@ -984,7 +1051,9 @@ TEST: {
 };
 
 # Character data 4a
-TEST: {
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder);
 	$w->startTag("foo");
@@ -995,7 +1064,9 @@ TEST: {
 };
 
 # Character data 4b
-TEST: {
+SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
 	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
 	initEnv('ENCODER' => $encoder);
 	$w->startTag("foo");
@@ -1006,7 +1077,9 @@ TEST: {
 };
 
 # Character data 4c
-TEST: {
+SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
 	my $encoder = XML::Writer::Encoding->xml_entity_data('isonum');
 	initEnv('ENCODER' => $encoder);
 	$w->startTag("foo");
@@ -1037,7 +1110,9 @@ TEST: {
 };
 
 # Character data 6a
-TEST: {
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder);
 	$w->startTag("foo");
@@ -1048,7 +1123,9 @@ TEST: {
 };
 
 # Character data 6b
-TEST: {
+SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
 	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
 	initEnv('ENCODER' => $encoder);
 	$w->startTag("foo");
@@ -1079,7 +1156,9 @@ TEST: {
 };
 
 # Character data 8a
-TEST: {
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder);
 	$w->startTag("foo");
@@ -1090,7 +1169,9 @@ TEST: {
 };
 
 # Character data 8b
-TEST: {
+SKIP: {
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
+
 	my $encoder = XML::Writer::Encoding->html_entities('^\t\r\n\x20-\x25\x27-\x3b\x3d\x3f-\x7e');
 	initEnv('ENCODER' => $encoder);
 	$w->startTag("foo");
@@ -1101,7 +1182,9 @@ TEST: {
 };
 
 # Character data 8c
-TEST: {
+SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
 	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
 	initEnv('ENCODER' => $encoder);
 	$w->startTag("foo");
@@ -1112,7 +1195,9 @@ TEST: {
 };
 
 # Character data 8d
-TEST: {
+SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
+
 	my $encoder = XML::Writer::Encoding->xml_entity_data('isonum');
 	initEnv('ENCODER' => $encoder);
 	$w->startTag("foo");
@@ -1191,6 +1276,7 @@ EOR
 # Make sure UTF-8 is written properly (HTML encoded)
 SKIP: {
 	skip $unicodeSkipMessage, 2 unless isUnicodeSupported();
+	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder, DATA_MODE => 1);
@@ -1221,6 +1307,7 @@ EOR
 # Make sure UTF-8 is written properly (XML encoded)
 SKIP: {
 	skip $unicodeSkipMessage, 2 unless isUnicodeSupported();
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
 
 	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
 	initEnv('ENCODER' => $encoder, DATA_MODE => 1);
@@ -1250,6 +1337,7 @@ EOR
 
 # Make sure UTF-8 is written properly (XML encoded)
 SKIP: {
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
 	skip $unicodeSkipMessage, 2 unless isUnicodeSupported();
 
 	my $encoder = XML::Writer::Encoding->xml_entity_data('isonum');
@@ -1281,6 +1369,7 @@ EOR
 # Test characters outside the BMP
 SKIP: {
 	skip $unicodeSkipMessage, 6 unless isUnicodeSupported();
+	skip $htmlSkipMessage, 6 unless isHTMLEntitiesAvailable();
 
 	my $s = "\x{10480}"; # U+10480 OSMANYA LETTER ALEF
 
@@ -1316,6 +1405,7 @@ EOR
 # Test entity mapping combinations
 SKIP: {
 	skip $unicodeSkipMessage, 8 unless isUnicodeSupported();
+	skip $xmlSkipMessage, 8 unless isXMLEntitiesDataAvailable();
 
 	my $ls = "\x{2018}"; # U+02018 lsquo
 	my $rs = "\x{2019}"; # U+02019 rsquo or rsquor
@@ -1386,6 +1476,7 @@ EOR
 # Test entity mapping combinations
 SKIP: {
 	skip $unicodeSkipMessage, 4 unless isUnicodeSupported();
+	skip $xmlSkipMessage, 4 unless isXMLEntitiesDataAvailable();
 
 	my $ls = "\x{2018}"; # U+02018 lsquo
 	my $rs = "\x{2019}"; # U+02019 rsquo or rsquor
@@ -1438,6 +1529,7 @@ EOR
 # Test entity mapping combinations 2
 SKIP: {
 	skip $unicodeSkipMessage, 4 unless isUnicodeSupported();
+	skip $xmlSkipMessage, 4 unless isXMLEntitiesDataAvailable();
 
 	my $ls = "\x{2018}"; # U+02018 lsquo
 	my $rs = "\x{2019}"; # U+02019 rsquo or rsquor
@@ -1485,7 +1577,8 @@ EOR
 
 # Test entity mapping combinations 2
 SKIP: {
-	skip $unicodeSkipMessage, 4 unless isUnicodeSupported();
+	skip $unicodeSkipMessage, 2 unless isUnicodeSupported();
+	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
 
 	my $ls = "\x{2018}"; # U+02018 lsquo
 	my $rs = "\x{2019}"; # U+02019 rsquo or rsquor
@@ -1510,7 +1603,7 @@ SKIP: {
 	$w->endTag();
 	$w->end();
 
-	checkResult(<<'EOR', 'Combined XML characters should be encoded correctly in XML encoding (isonum first)');
+	checkResult(<<'EOR', 'Custom XML characters should be encoded correctly in XML encoding');
 <y>
 <x>&lsquo;</x>
 <x>&rsquo;</x>
