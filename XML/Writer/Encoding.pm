@@ -36,7 +36,7 @@ sub custom_entity_data {
 	my %char2entity = %{$_[0]};
 	my $self;
 
-	sub num_entity {
+	sub _num_entity {
 		sprintf('&#x%02X;', ord($_[0]));
 	}
 
@@ -52,7 +52,7 @@ sub custom_entity_data {
 		}
 
 		# Encode control chars, high bit chars and '<', '&', '>', ''' and '"'
-		$$ref =~ s/([^\n\r\t !\#\$%\(-;=?-~])/$char2entity{$1} || num_entity($1)/ge;
+		$$ref =~ s/([^\n\r\t !\#\$%\(-;=?-~])/$char2entity{$1} || _num_entity($1)/ge;
 		$$ref;
 	};
 
@@ -67,7 +67,7 @@ sub custom_entity_data {
 		}
 
 		# Encode control chars, high bit chars and '<', '&', '>', ''' and '"'
-		$$ref =~ s/([^ !\#\$%\(-;=?-~])/$char2entity{$1} || num_entity($1)/ge;
+		$$ref =~ s/([^ !\#\$%\(-;=?-~])/$char2entity{$1} || _num_entity($1)/ge;
 		$$ref;
 	};
 
@@ -519,7 +519,7 @@ by the factory method.
 
 Encode the named entities in an internal DTD section.
 
-=item want_refs()
+=item wants_refs()
 
 Determine whether the factory can supply named entity references
 when C<make_refs($writer)> is called.
