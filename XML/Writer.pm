@@ -66,8 +66,7 @@ sub new {
   my $outputEncoding;
 
   my $checkUnencodedRepertoire;
-  my $writeCharacterEntities = defined ($params{WRITE_INTERNAL_ENTITIES}) ?
-                                     $params{WRITE_INTERNAL_ENTITIES} : 1;
+  my $writeCharacterEntities = $params{WRITE_INTERNAL_ENTITIES} || 0;
 
   $outputEncoding = $params{ENCODING} || "";
 

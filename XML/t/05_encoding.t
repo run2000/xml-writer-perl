@@ -609,12 +609,13 @@ EOS
 };
 
 # A document with a public and system identifier set, using startTag, HTML
-# internal entities = default, encoding = default
+# internal entities = yes, encoding = default
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
 	my $encoder = XML::Writer::Encoding->html_entities();
-	initEnv('ENCODER' => $encoder);
+	initEnv('ENCODER' => $encoder,
+			'WRITE_INTERNAL_ENTITIES' => 1);
 	$w->xmlDecl();
 	$w->doctype('html', "-//W3C//DTD XHTML 1.1//EN",
 						"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
@@ -678,7 +679,7 @@ SKIP: {
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
 
 	my $encoder = XML::Writer::Encoding->xml_entity_data('isolat1');
-	initEnv('ENCODER' => $encoder);
+	initEnv('ENCODER' => $encoder, 'WRITE_INTERNAL_ENTITIES' => 1);
 	$w->xmlDecl();
 	$w->doctype('html', "-//W3C//DTD XHTML 1.1//EN",
 						"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
@@ -743,7 +744,7 @@ SKIP: {
 
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder,
-			'ENCODING' => '');
+			'ENCODING' => '', 'WRITE_INTERNAL_ENTITIES' => 1);
 	$w->xmlDecl();
 	$w->doctype('html', "-//W3C//DTD XHTML 1.1//EN",
 						"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
@@ -804,13 +805,14 @@ EOS
 };
 
 # A document with a public and system identifier set, using startTag, HTML
-# internal entities = default, encoding = UTF-8
+# internal entities = yes, encoding = UTF-8
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder,
-			'ENCODING' => 'UTF-8');
+			'ENCODING' => 'UTF-8',
+			 'WRITE_INTERNAL_ENTITIES' => 1);
 	$w->xmlDecl();
 	$w->doctype('html', "-//W3C//DTD XHTML 1.1//EN",
 						"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
@@ -826,13 +828,14 @@ EOS
 };
 
 # A document with a public and system identifier set, using startTag, HTML
-# internal entities = default, encoding = US-ASCII
+# internal entities = yes, encoding = US-ASCII
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
 	my $encoder = XML::Writer::Encoding->html_entities();
 	initEnv('ENCODER' => $encoder,
-			'ENCODING' => 'US-ASCII');
+			'ENCODING' => 'US-ASCII',
+			'WRITE_INTERNAL_ENTITIES' => 1);
 	$w->xmlDecl();
 	$w->doctype('html', "-//W3C//DTD XHTML 1.1//EN",
 						"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
@@ -863,12 +866,12 @@ EOS
 };
 
 # A document with a public identifier and an empty system identifier (html encoder)
-# internal entities = default, encoding = default
+# internal entities = yes, encoding = default
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
 	my $encoder = XML::Writer::Encoding->html_entities();
-	initEnv('ENCODER' => $encoder);
+	initEnv('ENCODER' => $encoder, WRITE_INTERNAL_ENTITIES => 1);
 	$w->xmlDecl();
 	$w->doctype('html', "-//W3C//DTD XHTML 1.1//EN",
 						"");
@@ -943,7 +946,7 @@ SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
 	my $encoder = XML::Writer::Encoding->html_entities();
-	initEnv('ENCODER' => $encoder);
+	initEnv('ENCODER' => $encoder, WRITE_INTERNAL_ENTITIES => 1);
 	$w->xmlDecl();
 	$w->doctype('html', undef, "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
 	$w->emptyTag('html');
@@ -1833,7 +1836,7 @@ SKIP: {
 	XML::Writer::Encoding::croak_unless_valid_entity_names(\%entities);
 
 	my $encoder = XML::Writer::Encoding->custom_entity_data(\%entities);
-	initEnv(ENCODER => $encoder, DATA_MODE => 1);
+	initEnv(ENCODER => $encoder, WRITE_INTERNAL_ENTITIES => 1, DATA_MODE => 1);
 
 	$w->doctype('y');
 	$w->startTag('y');
@@ -1881,7 +1884,8 @@ SKIP: {
 	XML::Writer::Encoding::croak_unless_valid_entity_names(\%entities);
 
 	my $encoder = XML::Writer::Encoding->custom_entity_data(\%entities);
-	initEnv(ENCODER => $encoder, DATA_MODE => 1, DATA_INDENT => 2);
+	initEnv(ENCODER => $encoder, DATA_MODE => 1, WRITE_INTERNAL_ENTITIES => 1,
+			DATA_INDENT => 2);
 
 	$w->doctype('y');
 	$w->startTag('y');

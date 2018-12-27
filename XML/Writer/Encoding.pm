@@ -556,16 +556,16 @@ periods.
 =head1 DTD DECLARATION
 
 When C<XML::Writer::doctype()> is called, the encoder can construct
-an internal DTD for the named entity mappings. This is the default
-behaviour for the C<html_entities()>, C<xml_entity_data()>, and 
+an internal DTD for the named entity mappings. This feature is
+available for the C<html_entities()>, C<xml_entity_data()>, and
 C<custom_entity_data()> encoders.
 
-This behaviour can be overridden at construction time by setting the
-C<WRITE_INTERNAL_ENTITIES> to 0, as follows:
+This behaviour can be enabled at construction time by setting the
+C<WRITE_INTERNAL_ENTITIES> to 1, as follows:
 
   my $xmlEncoding = XML::Writer::Encoding->html_entities();
   my $writer = new XML::Writer(ENCODER => $xmlEncoding,
-                               WRITE_INTERNAL_ENTITIES => 0);
+                               WRITE_INTERNAL_ENTITIES => 1);
 
   $writer->doctype('html', '-//W3C//DTD XHTML 1.0 Strict//EN',
                    'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd');
