@@ -674,7 +674,7 @@ EOS
 };
 
 # A document with a public and system identifier set, using startTag, XML
-# internal entities = default, encoding = default
+# internal entities = yes, encoding = default
 SKIP: {
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
 
@@ -738,7 +738,7 @@ EOS
 };
 
 # A document with a public and system identifier set, using startTag
-# internal entities = default, encoding = ''
+# internal entities = yes, encoding = ''
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
@@ -941,7 +941,7 @@ EOS
 };
 
 # A document with only a system identifier set (html entities)
-# internal entities = default, encoding = default
+# internal entities = yes, encoding = default
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
