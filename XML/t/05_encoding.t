@@ -15,7 +15,7 @@ use strict;
 
 use Errno;
 
-use Test::More(tests => 174);
+use Test::More(tests => 178);
 
 # Catch warnings
 my $warning;
@@ -1787,7 +1787,7 @@ SKIP: {
 	$w->endTag();
 	$w->end();
 
-	checkResult(<<'EOR', 'Combined XML characters should be encoded correctly in XML encoding (isonum first)');
+	checkResult(<<'EOR', 'Combined XML characters should be encoded correctly in XML encoding 2 (isonum first)');
 <y>
 <x>&lsquo;</x>
 <x>&rsquo;</x>
@@ -1807,7 +1807,48 @@ EOR
 	$w->endTag();
 	$w->end();
 
-	checkResult(<<'EOR', 'Combined XML characters should be encoded correctly in XML encoding (isopub first)');
+	checkResult(<<'EOR', 'Combined XML characters should be encoded correctly in XML encoding 2 (isopub first)');
+<y>
+<x>&lsquo;</x>
+<x>&rsquor;</x>
+</y>
+EOR
+}
+
+# Test entity mapping combinations 2
+SKIP: {
+	skip $unicodeSkipMessage, 4 unless isUnicodeSupported();
+	skip $xmlSkipMessage, 4 unless isXMLEntitiesDataAvailable();
+
+	my $ls = "\x{2018}"; # U+02018 lsquo
+	my $rs = "\x{2019}"; # U+02019 rsquo or rsquor
+
+	my $encoder = XML::Writer::Encoding->xml_entity_data('isonum', 'isopub');
+	initEnv(ENCODER => $encoder, DATA_MODE => 1);
+
+	$w->startTag('y');
+	$w->dataElement('x', $ls);
+	$w->dataElement('x', $rs);
+	$w->endTag();
+	$w->end();
+
+	checkResult(<<'EOR', 'Combined XML characters should be encoded correctly in XML encoding 3 (isonum first)');
+<y>
+<x>&lsquo;</x>
+<x>&rsquo;</x>
+</y>
+EOR
+
+	$encoder = XML::Writer::Encoding->xml_entity_data('isopub', 'isonum');
+	initEnv(ENCODER => $encoder, DATA_MODE => 1);
+
+	$w->startTag('y');
+	$w->dataElement('x', $ls);
+	$w->dataElement('x', $rs);
+	$w->endTag();
+	$w->end();
+
+	checkResult(<<'EOR', 'Combined XML characters should be encoded correctly in XML encoding 3 (isopub first)');
 <y>
 <x>&lsquo;</x>
 <x>&rsquor;</x>

@@ -24,10 +24,9 @@ $VERSION = "0.699";
 
 # Takes a name of an entity set from XML::Entities::Data
 sub xml_entity_data {
-	my ($class, $entitySet) = @_;
-	require XML::Entities::Data;
+	my ($class) = shift;
 
-	return custom_entity_data($class, XML::Entities::Data::char2entity($entitySet));
+	return custom_entity_data($class, combine_xml_entities(@_));
 }
 
 # Takes a map reference of ordinals to entity names
@@ -304,32 +303,44 @@ sub wants_refs {
 
 # Combine references of hashes, first character reference wins.
 sub combine_data {
-	my %char2ent = ();
 
-	foreach my $set (@_) {
-		foreach my $el (keys (%$set)) {
-			$char2ent{$el} = $set->{$el}
-				unless (exists $char2ent{$el});
+	if (int (@_) == 1) {
+		return $_[0];
+
+	} else {
+		my %char2ent = ();
+
+		foreach my $set (@_) {
+			foreach my $el (keys (%$set)) {
+				$char2ent{$el} = $set->{$el}
+					unless (exists $char2ent{$el});
+			}
 		}
+		return \%char2ent;
 	}
-	return \%char2ent;
 }
 
 # Combine character sets by name, first character reference wins.
 sub combine_xml_entities {
-	my %char2ent = ();
-
 	require XML::Entities::Data;
 
-	foreach my $setname (@_) {
-		my $set = XML::Entities::Data::char2entity($setname);
+	# Avoid a big copy of entity references if possible
+	if (int (@_) == 1) {
+		return XML::Entities::Data::char2entity($_[0]);
 
-		foreach my $el (keys (%$set)) {
-			$char2ent{$el} = $set->{$el}
-				unless (exists $char2ent{$el});
+	} else {
+		my %char2ent = ();
+
+		foreach my $setname (@_) {
+			my $set = XML::Entities::Data::char2entity($setname);
+
+			foreach my $el (keys (%$set)) {
+				$char2ent{$el} = $set->{$el}
+					unless (exists $char2ent{$el});
+			}
 		}
+		return \%char2ent;
 	}
-	return \%char2ent;
 }
 
 # For each given hash reference, ensure the hash names conform
@@ -451,16 +462,21 @@ unsafe characters specified.
 
 See the C<HTML::Entities::encode_entities()> method for details.
 
-=item xml_entity_data($entity_set_name)
+=item xml_entity_data($entity_set_name[, $entity_set_name2[, ...])
 
 Create an C<XML::Writer::Encoding> object that encodes text using one
-of the entity sets provided by the C<XML::Entities::Data> module.
+or more of the entity sets provided by the C<XML::Entities::Data>
+module.
 
   my $encoder = XML::Writer::Encoding->xml_entity_data('isonum');
   my $writer = XML::Writer->new(ENCODER => $encoder);
 
-The entity_set_name argument specifies which entity set should be
-used.
+The entity_set_name argument specifies which entity set or sets
+should be used.
+
+Specify multiple entity set names to combine entity sets from the
+C<XML::Entities::Data> module. Where more than one entity name maps
+onto a given character, the first encountered name takes precedence.
 
 The resulting encoding is 7-bit ASCII safe.
 
@@ -469,9 +485,7 @@ The resulting encoding is 7-bit ASCII safe.
 =item Note:
 
 There can be multiple mappings from a code point to an entity name.
-Using the 'all' set can result in an unpredictable mapping. Use the
-C<combine_xml_entities()> method to control how multiple entity sets
-are merged.
+Using the 'all' set can result in an unpredictable mapping.
 
 =back
 
