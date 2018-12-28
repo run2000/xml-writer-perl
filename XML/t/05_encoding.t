@@ -15,7 +15,7 @@ use strict;
 
 use Errno;
 
-use Test::More(tests => 178);
+use Test::More(tests => 182);
 
 # Catch warnings
 my $warning;
