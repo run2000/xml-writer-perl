@@ -32,7 +32,7 @@ sub xml_entity_data {
 # Takes a map reference of ordinals to entity names
 sub custom_entity_data {
 	my ($class) = shift;
-	my %char2entity = %{$_[0]};
+	my %char2entity = %{(int (@_) == 1) ? $_[0] : combine_data(@_)};
 	my $self;
 
 	sub _num_entity {
