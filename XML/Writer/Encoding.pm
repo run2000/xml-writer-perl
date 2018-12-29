@@ -348,8 +348,7 @@ sub combine_xml_entities {
 sub croak_unless_valid_entity_names {
 
 	foreach my $set (@_) {
-		foreach my $el (keys (%$set)) {
-			my $entName = $set->{$el};
+		foreach my $entName (values (%$set)) {
 			Carp::croak ("Entity name \"$entName\" must start with & and end with ;")
 				unless ($entName =~ m/^&\w[\w\.\-]*;$/);
 		}
