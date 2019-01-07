@@ -16,6 +16,11 @@ Here is an example:
 
 If necessary, error-checking can be turned off for production use.
 
+This fork is interested in using character entity encoding from
+HTML::Entities, XML::Entities::Data, or a custom entity set, for
+encoding non-ASCII characters. See the POD in XML::Writer::Encoder
+for details.
+
 See the Changes file for detailed changes between versions.
 
 Copyright (c) 1999 by Megginson Technologies.
