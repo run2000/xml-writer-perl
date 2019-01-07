@@ -1,5 +1,10 @@
 Revision history for Perl extension XML::Writer.
 
+0.699 Mon Jan  7 2019 16:36:59 +1100    <run2000@the mailers of g.com>
+        - Option to use entity sets from XML::Entities::Data
+          or HTML::Entities.
+        - Option to emit character entities in internal DTD.
+
 0.625 Thu Jun  5 2014 23:55:42 +1000    <joe@kafsemo.org>
         - Allow xml-model processing instructions (#94078).
         - Don't warn when undef is passed to setOutput (#94369).
