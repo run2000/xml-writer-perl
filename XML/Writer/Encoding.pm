@@ -304,43 +304,32 @@ sub wants_refs {
 # Combine references of hashes, first character reference wins.
 sub combine_data {
 
-	if (int (@_) == 1) {
-		return $_[0];
+	my %char2ent = ();
 
-	} else {
-		my %char2ent = ();
-
-		foreach my $set (@_) {
-			foreach my $el (keys (%$set)) {
-				$char2ent{$el} = $set->{$el}
-					unless (exists $char2ent{$el});
-			}
+	foreach my $set (@_) {
+		foreach my $el (keys (%$set)) {
+			$char2ent{$el} = $set->{$el}
+				unless (exists $char2ent{$el});
 		}
-		return \%char2ent;
 	}
+	return \%char2ent;
 }
 
 # Combine character sets by name, first character reference wins.
 sub combine_xml_entities {
 	require XML::Entities::Data;
 
-	# Avoid a big copy of entity references if possible
-	if (int (@_) == 1) {
-		return XML::Entities::Data::char2entity($_[0]);
+	my %char2ent = ();
 
-	} else {
-		my %char2ent = ();
+	foreach my $setname (@_) {
+		my $set = XML::Entities::Data::char2entity($setname);
 
-		foreach my $setname (@_) {
-			my $set = XML::Entities::Data::char2entity($setname);
-
-			foreach my $el (keys (%$set)) {
-				$char2ent{$el} = $set->{$el}
-					unless (exists $char2ent{$el});
-			}
+		foreach my $el (keys (%$set)) {
+			$char2ent{$el} = $set->{$el}
+				unless (exists $char2ent{$el});
 		}
-		return \%char2ent;
 	}
+	return \%char2ent;
 }
 
 # For each given hash reference, ensure the hash names conform
