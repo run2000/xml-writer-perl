@@ -831,6 +831,9 @@ sub _croakUnlessNonEmptyASCII($) {
   if ($_[0] eq '') {
     croak('Empty identifiers are not permitted in this part of a US-ASCII document');
   }
+  if ($_[0] =~ /\s/) {
+    croak('Space characters are not permitted in this part of a US-ASCII document');
+  }
   if ($_[0] =~ /[^\x21-\x7F]/) {
     croak('Non-ASCII characters are not permitted in this part of a US-ASCII document');
   }
