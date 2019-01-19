@@ -1,5 +1,5 @@
 language: perl
-dist: xenial
+dist: trusty
 perl:
  - "5.8"
  - "5.18"
