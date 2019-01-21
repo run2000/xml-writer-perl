@@ -10,7 +10,7 @@ Commit all changes.
 
 Run tests:
 for t in t/*.t; do
-  PERL5LIB=.. perl "$t"
+  perl -I.. "$t"
 done
 
 Bump version in:
