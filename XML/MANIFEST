@@ -2,8 +2,10 @@ README
 Changes
 MANIFEST
 Makefile.PL
+META.json
 META.yml
 Writer.pm
+Writer/Encoding.pm
 t/01_main.t
 t/pod.t
 t/pod-coverage.t
