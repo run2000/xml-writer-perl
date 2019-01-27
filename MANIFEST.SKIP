@@ -1,0 +1,4 @@
+#!include_default
+-howto$
+\.travis\.yml$
+^web/

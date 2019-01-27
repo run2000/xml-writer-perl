@@ -23,7 +23,7 @@ my $htmlChanges = '';
 my $latest;
 my $latestDate;
 
-my $changes = new IO::File(File::Spec->catfile($FindBin::Bin, 'XML', 'Changes'), '<') or die "Unable to open Changes: $!";
+my $changes = new IO::File(File::Spec->catfile($FindBin::Bin, '..', 'Changes'), '<') or die "Unable to open Changes: $!";
 
 while (<$changes>) {
 	my $datestr;

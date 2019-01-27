@@ -13,13 +13,13 @@ Commit all changes.
 
 Run tests:
 for t in t/*.t; do
-  perl -I.. "$t"
+  perl -Ilib "$t"
 done
 
 Bump version in:
 	Writer.pm
-	Makefile.PL
 	META.yml
+	META.json
 
 Update changelog.
 
@@ -49,12 +49,14 @@ cover -test -report Html_basic -outputdir coverage
 Upload to CPAN.
 
 Update web page:
-./gen-index.pl >generated-index.html
-
 mkdir temp-website
-cp style.css temp-website/
+
+cd web
+./gen-index.pl >../temp-website/index.html
+cp style.css ../temp-website/
+cd ..
+
 cp -pr /tmp/XML-Writer-$xwver/coverage temp-website/
-cp generated-index.html temp-website/index.html
 
 cd temp-website
 git init
