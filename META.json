@@ -1,12 +1,12 @@
 {
-   "abstract" : "Easily generate well-formed, namespace-aware XML.",
+   "abstract" : "Perl extension for writing XML documents.",
    "author" : [
       "David Megginson <david@megginson.com>",
       "Ed Avis <ed@membled.com>",
       "Joseph Walton <joe@kafsemo.org>"
    ],
-   "dynamic_config" : "0",
-   "generated_by" : "Hand, CPAN::Meta::Converter version 2.150010",
+   "dynamic_config" : 0,
+   "generated_by" : "Minilla/v3.1.4, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "unrestricted"
    ],
@@ -16,6 +16,11 @@
    },
    "name" : "XML-Writer",
    "no_index" : {
+      "directory" : [
+         "t",
+         "xt",
+         "examples"
+      ],
       "package" : [
          "XML::Writer::Namespaces"
       ]
@@ -23,22 +28,71 @@
    "prereqs" : {
       "build" : {
          "requires" : {
-            "Test::More" : "0.047",
             "perl" : "5.006_000"
+         }
+      },
+      "configure" : {
+         "requires" : {
+            "Module::Build" : "0.4005"
+         }
+      },
+      "develop" : {
+         "recommends" : {
+            "File::Spec" : "0",
+            "FindBin" : "0",
+            "HTML::Entities" : "0",
+            "IO::File" : "0",
+            "version" : "0"
+         },
+         "requires" : {
+            "Test::CPAN::Meta" : "0",
+            "Test::MinimumVersion::Fast" : "0.04",
+            "Test::PAUSE::Permissions" : "0.04",
+            "Test::Pod" : "1.41",
+            "Test::Spellunker" : "v0.2.7"
          }
       },
       "runtime" : {
          "recommends" : {
             "perl" : "5.008_001"
          },
+         "requires" : {
+            "perl" : "5.004"
+         },
          "suggests" : {
             "HTML::Entities" : "2.00",
             "XML::Entities::Data" : "0"
          }
+      },
+      "test" : {
+         "recommends" : {
+            "HTML::Entities" : "2.00",
+            "Test::Pod" : "0",
+            "Test::Pod::Coverage" : "0",
+            "XML::Entities::Data" : "0"
+         },
+         "requires" : {
+            "Test::More" : "0.047"
+         }
       }
    },
-   "release_status" : "stable",
-   "version" : "0.625",
+   "release_status" : "unstable",
+   "version" : "0.699",
+   "x_contributors" : [
+      "Andreas J. König <ANDK@cpan.org>",
+      "Carlos Rosão <shemahmforash@gmail.com>",
+      "Franck Joncourt <franck@debian.org>",
+      "Geraint Edwards <gedge-oss@yadn.org>",
+      "Jason Rodrigues <jasonjayr+oss@gmail.com>",
+      "Kenneth Pronovici <pronovic@debian.org>",
+      "Nicholas Cull <run2000@gmail.com>",
+      "Srinivas Thanneeru <srinithan@yahoo.co.in>",
+      "Sébastien Aperghis-Tramoni <maddingue@free.fr>",
+      "Vangelis Katsikaros <vkatsikaros@gmail.com>",
+      "Yanick Champoux <yanick+cpan@babyl.dyndns.org>",
+      "Yanick Champoux <yanick@babyl.dyndns.org>"
+   ],
    "x_installdirs" : "site",
-   "x_serialization_backend" : "JSON::PP version 2.27400_02"
+   "x_serialization_backend" : "JSON::PP version 2.27400_02",
+   "x_static_install" : 1
 }

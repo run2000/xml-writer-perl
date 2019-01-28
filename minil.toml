@@ -1,0 +1,19 @@
+name = "XML-Writer"
+readme_from = "lib/XML/Writer.pm"
+authors = ['David Megginson <david@megginson.com>', 'Ed Avis <ed@membled.com>', 'Joseph Walton <joe@kafsemo.org>']
+# badges = ["travis-ci.com"]
+module_maker="ModuleBuild"
+static_install = "auto"
+license = "unrestricted"
+tag_format = "xml-writer-%v"
+allow_pureperl = 1
+
+[no_index]
+directory = ['t', 'xt', 'examples']
+package = ['XML::Writer::Namespaces']
+
+[FileGatherer]
+exclude_match = ['\-howto$', 'web/*']
+
+[Metadata]
+x_installdirs = "site"
