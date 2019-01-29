@@ -3,9 +3,10 @@ To Release
 
 Prerequisities:
 libdevel-cover-perl libtemplate-perl libtest-pod-coverage-perl libppi-html-perl
-libhtml-parser-perl
+libhtml-parser-perl libmodule-build-perl cpanminus
 
 cpanm XML::Entities
+cpanm Minilla
 
 (Notes.)
 
