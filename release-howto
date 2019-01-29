@@ -18,32 +18,19 @@ done
 
 Bump version in:
 	Writer.pm
-	META.yml
-	META.json
+	Writer/Encoding.pm
 
 Update changelog.
 
 git commit -a
 
-xwver=A.BCD
-git tag -s xml-writer-$xwver
-
-git push origin master xml-writer-$xwver
-
 Locally,
 
 # Create a distribution from the tag
-mkdir /tmp/xml-writer-release
-git archive xml-writer-$xwver | tar -x -C /tmp/xml-writer-release
-cd /tmp/xml-writer-release
-
-perl Makefile.PL
-make dist
+minil release
 
 # Generate coverage report for the new release
-tar -xf XML-Writer-$xwver.tar.gz -C /tmp
-cd /tmp/XML-Writer-$xwver
-perl Makefile.PL
+perl Build.PL
 cover -test -report Html_basic -outputdir coverage
 
 Upload to CPAN.
@@ -56,7 +43,7 @@ cd web
 cp style.css ../temp-website/
 cd ..
 
-cp -pr /tmp/XML-Writer-$xwver/coverage temp-website/
+cp -pr coverage temp-website/
 
 cd temp-website
 git init
