@@ -3,11 +3,16 @@ suggests 'HTML::Entities', '2.00';
 suggests 'XML::Entities::Data';
 
 on develop => sub {
-    recommends 'version';
-    recommends 'IO::File';
-    recommends 'FindBin';
-    recommends 'File::Spec';
-    recommends 'HTML::Entities';
+    requires 'Devel::Cover';
+    requires 'Template::Toolkit';
+    requires 'Test::Pod::Coverage';
+    requires 'PPI::HTML';
+    requires 'HTML::Parser';
+    requires 'Minilla';
+};
+
+on configure => sub {
+    requires 'Module::Build';
 };
 
 on build => sub {

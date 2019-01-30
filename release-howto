@@ -2,11 +2,15 @@ To Release
 ----------
 
 Prerequisities:
-libdevel-cover-perl libtemplate-perl libtest-pod-coverage-perl libppi-html-perl
-libhtml-parser-perl libmodule-build-perl cpanminus
-
-cpanm XML::Entities
-cpanm Minilla
+* libdevel-cover-perl (Devel::Cover)
+* libtemplate-perl (Template::Toolkit)
+* libtest-pod-coverage-perl (Test::Pod::Coverage)
+* libppi-html-perl (PPI::HTML)
+* libhtml-parser-perl (HTML::Parser and HTML::Entities)
+* libmodule-build-perl (Module::Build)
+* cpanminus (App::cpanminus)
+  - XML::Entities
+  - Minilla
 
 (Notes.)
 
@@ -39,10 +43,8 @@ Upload to CPAN.
 Update web page:
 mkdir temp-website
 
-cd web
-./gen-index.pl >../temp-website/index.html
-cp style.css ../temp-website/
-cd ..
+web/gen-index.pl >temp-website/index.html
+cp web/style.css temp-website/
 
 cp -pr coverage temp-website/
 

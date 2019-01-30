@@ -18,7 +18,7 @@ my @months = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
 my %m2n;
 @m2n{@months} = (1 .. scalar(@months));
 
-my $cpanMeta = CPAN::Meta->load_file('../META.json');
+my $cpanMeta = CPAN::Meta->load_file(File::Spec->catfile($FindBin::Bin, '..', 'META.json'));
 my $version = $cpanMeta->version();
 
 my $index = new IO::File(File::Spec->catfile($FindBin::Bin, 'index.html'), '<') or die "Unable to open index.html: $!";
@@ -30,17 +30,17 @@ my $latestDate;
 my $changes = new IO::File(File::Spec->catfile($FindBin::Bin, '..', "XML-Writer-$version", 'Changes'), '<') or die "Unable to open Changes: $!";
 
 while (<$changes>) {
-	my $datestr;
+	my ($datestr, $y, $m, $d, $vs);
 
-	if (my ($m, $d, $y) = /^[0-9].*([A-Z][a-z]{2})\s+(\d+).*\s([0-9]{4})\s/) {
+	if (($m, $d, $y) = /^[0-9].*([A-Z][a-z]{2})\s+(\d+).*\s([0-9]{4})\s/) {
 		my $mn = $m2n{$m};
 		$datestr = sprintf('%04d-%02d-%02d', $y, $mn, $d);
-	} elsif (my ($y, $m, $d) = /^[0-9\.]+\s+(\d+\-\d+\-\d+)T/) {
+	} elsif (($y, $m, $d) = /^[0-9\.]+\s+(\d+\-\d+\-\d+)T/) {
 		# Minilla uses ISO 8601 date format
 		$datestr = $1;
 	}
 
-	if (my ($vs) = /^(\d+\.\d+(?:\.\d+)?)\s+/) {
+	if (($vs) = /^(\d+\.\d+(?:\.\d+)?)\s+/) {
 		$vs = new version($vs);
 		if (!$latest || ($vs > $latest)) {
 			$latest = $vs;
