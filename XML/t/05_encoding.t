@@ -15,7 +15,7 @@ use strict;
 
 use Errno;
 
-use Test::More(tests => 188);
+use Test::More(tests => 197);
 
 # Catch warnings
 my $warning;
@@ -548,6 +548,14 @@ SKIP: {
 EOS
 };
 
+# Encoder supplied as a string name, rather than an Encoding reference
+TEST: {
+	expectError("Not a supported XML encoder", eval {
+		initEnv('ENCODER' => 'UTF-8');
+	});
+};
+
+
 # Empty element tag, XML entity data isolat1, encoding = default
 SKIP: {
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
@@ -928,12 +936,27 @@ EOS
 
 # A document with only a system identifier set
 TEST: {
-	initEnv();
+	initEnv(WRITE_INTERNAL_ENTITIES => 1);
 	$w->xmlDecl();
 	$w->doctype('html', undef, "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
 	$w->emptyTag('html');
 	$w->end();
-	checkResult(<<"EOS", 'A document with just a system identifier');
+	checkResult(<<"EOS", 'A UTF-8 document with just a system identifier');
+<?xml version="1.0"?>
+<!DOCTYPE html SYSTEM "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html />
+EOS
+};
+
+# A document with only a system identifier set
+# US-ASCII encoding
+TEST: {
+	initEnv(ENCODING => 'us-ascii', WRITE_INTERNAL_ENTITIES => 1);
+	$w->xmlDecl('');
+	$w->doctype('html', undef, "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
+	$w->emptyTag('html');
+	$w->end();
+	checkResult(<<"EOS", 'A US-ASCII document with just a system identifier');
 <?xml version="1.0"?>
 <!DOCTYPE html SYSTEM "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html />
@@ -2050,17 +2073,9 @@ SKIP: {
 
 	my $encoding = XML::Writer::Encoding->custom_entity_data(\%entities);
 
-	if (defined $encoding->encode(undef)) {
-		fail("Expected undef encode result from undef parameter");
-	} else {
-		ok(1, "Undef encode result expected");
-	}
+	is ($encoding->encode(undef), undef, "Expected undef encode result from undef parameter");
 
-	if (defined $encoding->attribute(undef)) {
-		fail("Expected attribute encode result from undef parameter");
-	} else {
-		ok(1, "Undef attribute result expected");
-	}
+	is ($encoding->attribute(undef), undef, "Expected attribute encode result from undef parameter");
 
 	my @values = ('Line one < done.', 'Line two > done.');
 
@@ -2073,6 +2088,23 @@ SKIP: {
 	$result = shift @values;
 	is ($result, 'Line two &gt; done.', 'Void context attribute of array ok.');
 
+}
+
+TEST: {
+	my @methods = ('encode', 'attribute', 'make_refs', 'wants_refs');
+	my $encoder = XML::Writer::Encoding->numeric_entities();
+
+	can_ok($encoder, @methods);
+
+	ok (! $encoder->wants_refs(), "Numeric entities doesn't want to write internal DTD refs");
+	is ($encoder->make_refs(), undef, "No return value for numeric make_refs");
+
+	$encoder = XML::Writer::Encoding->minimal_entities();
+
+	can_ok($encoder, @methods);
+
+	ok (! $encoder->wants_refs(), "Minimal entities doesn't want to write internal DTD refs");
+	is ($encoder->make_refs(), undef, "No return value for minimal make_refs");
 }
 
 # Free test resources
