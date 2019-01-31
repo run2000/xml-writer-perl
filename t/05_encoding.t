@@ -15,7 +15,7 @@ use strict;
 
 use Errno;
 
-use Test::More(tests => 182);
+use Test::More(tests => 197);
 
 # Catch warnings
 my $warning;
@@ -548,6 +548,14 @@ SKIP: {
 EOS
 };
 
+# Encoder supplied as a string name, rather than an Encoding reference
+TEST: {
+	expectError("Not a supported XML encoder", eval {
+		initEnv('ENCODER' => 'UTF-8');
+	});
+};
+
+
 # Empty element tag, XML entity data isolat1, encoding = default
 SKIP: {
 	skip $xmlSkipMessage, 2 unless isXMLEntitiesDataAvailable();
@@ -635,7 +643,7 @@ EOS
 SKIP: {
 	skip $htmlSkipMessage, 2 unless isHTMLEntitiesAvailable();
 
-	my $encoder = XML::Writer::Encoding->html_entities();
+	my $encoder = XML::Writer::Encoding->html_entities('');
 	initEnv('ENCODER' => $encoder,
 			'WRITE_INTERNAL_ENTITIES' => 0);
 	$w->xmlDecl();
@@ -928,12 +936,27 @@ EOS
 
 # A document with only a system identifier set
 TEST: {
-	initEnv();
+	initEnv(WRITE_INTERNAL_ENTITIES => 1);
 	$w->xmlDecl();
 	$w->doctype('html', undef, "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
 	$w->emptyTag('html');
 	$w->end();
-	checkResult(<<"EOS", 'A document with just a system identifier');
+	checkResult(<<"EOS", 'A UTF-8 document with just a system identifier');
+<?xml version="1.0"?>
+<!DOCTYPE html SYSTEM "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html />
+EOS
+};
+
+# A document with only a system identifier set
+# US-ASCII encoding
+TEST: {
+	initEnv(ENCODING => 'us-ascii', WRITE_INTERNAL_ENTITIES => 1);
+	$w->xmlDecl('');
+	$w->doctype('html', undef, "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
+	$w->emptyTag('html');
+	$w->end();
+	checkResult(<<"EOS", 'A US-ASCII document with just a system identifier');
 <?xml version="1.0"?>
 <!DOCTYPE html SYSTEM "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html />
@@ -1238,6 +1261,16 @@ TEST: {
 	$w->endTag("foo");
 	$w->end();
 	checkResult("<foo>Line with tabs\t\tand newlines\r\n</foo>\n", 'Unescaped control characters US-ASCII');
+};
+
+# Character data 2a
+TEST: {
+	initEnv('ENCODING' => 'US-ASCII');
+	$w->startTag("foo");
+	$w->characters("Line containing <<less & greater>> didn't fail.\r\n");
+	$w->endTag("foo");
+	$w->end();
+	checkResult("<foo>Line containing &lt;&lt;less &amp; greater&gt;&gt; didn't fail.\r\n</foo>\n", 'Unescaped control characters US-ASCII');
 };
 
 # Character data 2 - HTML entities
@@ -2020,6 +2053,58 @@ SKIP: {
 		XML::Writer::Encoding::croak_unless_valid_entity_names(\%entities);
 	});
 
+}
+
+# Test directly
+SKIP: {
+	skip $unicodeSkipMessage, 1 unless isUnicodeSupported();
+
+	my $ls = "\x{2018}"; # U+02018 lsquo
+	my $rs = "\x{2019}"; # U+02019 rsquo or rsquor
+
+	my %entities = (
+		chr(38) => '&amp;',
+		chr(0x00027) => '&apos;',
+		chr(0x0003E) => '&gt;',
+		chr(60) => '&lt;',
+		chr(0x02018) => '&lsquo;',
+		chr(0x02019) => '&rsquo'
+	);
+
+	my $encoding = XML::Writer::Encoding->custom_entity_data(\%entities);
+
+	is ($encoding->encode(undef), undef, "Expected undef encode result from undef parameter");
+
+	is ($encoding->attribute(undef), undef, "Expected attribute encode result from undef parameter");
+
+	my @values = ('Line one < done.', 'Line two > done.');
+
+	$encoding->encode(@values);
+	
+	my $result = shift @values;
+	is ($result, 'Line one &lt; done.', 'Void context encode of array ok.');
+
+	$encoding->attribute(@values);
+	$result = shift @values;
+	is ($result, 'Line two &gt; done.', 'Void context attribute of array ok.');
+
+}
+
+TEST: {
+	my @methods = ('encode', 'attribute', 'make_refs', 'wants_refs');
+	my $encoder = XML::Writer::Encoding->numeric_entities();
+
+	can_ok($encoder, @methods);
+
+	ok (! $encoder->wants_refs(), "Numeric entities doesn't want to write internal DTD refs");
+	is ($encoder->make_refs(), undef, "No return value for numeric make_refs");
+
+	$encoder = XML::Writer::Encoding->minimal_entities();
+
+	can_ok($encoder, @methods);
+
+	ok (! $encoder->wants_refs(), "Minimal entities doesn't want to write internal DTD refs");
+	is ($encoder->make_refs(), undef, "No return value for minimal make_refs");
 }
 
 # Free test resources
