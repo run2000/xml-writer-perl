@@ -25,7 +25,7 @@ there are not duplicate attribute names.
 
 This fork is interested in using character entity encoding from
 [HTML::Entities](https://metacpan.org/pod/HTML::Entities), [XML::Entities::Data](https://metacpan.org/pod/XML::Entities::Data), or a custom entity set,
-for encoding non-ASCII characters. See [XML::Writer::Encoding](https://metacpan.org/pod/XML::Writer::Encoding)
+for encoding non-ASCII characters. See `XML::Writer::Encoding`
 for details.
 
 If necessary, error-checking can be turned off for production use.

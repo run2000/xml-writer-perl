@@ -24,7 +24,7 @@ there are not duplicate attribute names.
 
 This fork is interested in using character entity encoding from
 L<HTML::Entities>, L<XML::Entities::Data>, or a custom entity set,
-for encoding non-ASCII characters. See L<XML::Writer::Encoding>
+for encoding non-ASCII characters. See C<XML::Writer::Encoding>
 for details.
 
 If necessary, error-checking can be turned off for production use.
