@@ -1,7 +1,7 @@
 name = "XML-Writer"
-readme_from = "lib/XML/Writer.pm"
+readme_from = "README.pod"
 authors = ['David Megginson <david@megginson.com>', 'Ed Avis <ed@membled.com>', 'Joseph Walton <joe@kafsemo.org>']
-# badges = ["travis-ci.com"]
+badges = ["travis-ci.org"]
 module_maker="ModuleBuild"
 static_install = "auto"
 license = "unrestricted"

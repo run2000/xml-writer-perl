@@ -1,0 +1,45 @@
+=head1 NAME
+
+XML::Writer - Perl extension for writing XML documents.
+
+=head1 SYNOPSIS
+
+L<XML::Writer> is a simple Perl module for writing XML documents: it
+takes care of constructing markup and escaping data correctly, and by
+default, it also performs a significant amount of well-formedness
+checking on the output, to make certain (for example) that start and
+end tags match, that there is exactly one document element, and that
+there are not duplicate attribute names.
+
+=head1 EXAMPLE
+
+  my $writer = new XML::Writer();
+
+  $writer->startTag('greeting', 'type' => 'simple');
+  $writer->characters("Hello, world!");
+  $writer->endTag('greeting');
+  $writer->end();
+
+=head1 NOTES
+
+This fork is interested in using character entity encoding from
+L<HTML::Entities>, L<XML::Entities::Data>, or a custom entity set,
+for encoding non-ASCII characters. See L<XML::Writer::Encoding>
+for details.
+
+If necessary, error-checking can be turned off for production use.
+
+See the Changes file for detailed changes between versions.
+
+=head1 COPYRIGHT
+
+Copyright (c) 1999 by Megginson Technologies.
+
+Copyright (c) 2003 Ed Avis E<lt>ed@membled.comE<gt>
+
+Copyright (c) 2004-2010 Joseph Walton E<lt>joe@kafsemo.orgE<gt>
+
+=head1 CONTACT
+
+Current development is hosted at L<http://josephw.github.com/xml-writer-perl/>.
+
