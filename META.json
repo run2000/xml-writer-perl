@@ -12,7 +12,7 @@
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
-      "version" : "2"
+      "version" : 2
    },
    "name" : "XML-Writer",
    "no_index" : {
@@ -76,6 +76,17 @@
       }
    },
    "release_status" : "unstable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/run2000/xml-writer-perl/issues"
+      },
+      "homepage" : "https://github.com/run2000/xml-writer-perl",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/run2000/xml-writer-perl.git",
+         "web" : "https://github.com/run2000/xml-writer-perl"
+      }
+   },
    "version" : "0.699",
    "x_contributors" : [
       "Andreas J. König <ANDK@cpan.org>",
@@ -88,10 +99,9 @@
       "Srinivas Thanneeru <srinithan@yahoo.co.in>",
       "Sébastien Aperghis-Tramoni <maddingue@free.fr>",
       "Vangelis Katsikaros <vkatsikaros@gmail.com>",
-      "Yanick Champoux <yanick+cpan@babyl.dyndns.org>",
       "Yanick Champoux <yanick@babyl.dyndns.org>"
    ],
    "x_installdirs" : "site",
-   "x_serialization_backend" : "JSON::PP version 2.27400_02",
+   "x_serialization_backend" : "JSON::PP version 2.97001",
    "x_static_install" : 1
 }
